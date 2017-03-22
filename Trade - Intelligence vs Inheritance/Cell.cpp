@@ -1,10 +1,10 @@
 #include "Cell.h"
 #include "Simulation.h"
-#include "Agent.h"
 #include <stdio.h>
 #include <Windows.h>
 
 Agent;
+Simulation;
 
 using namespace std;
 
