@@ -140,14 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Agent.cpp" />
-    <ClCompile Include="Cell.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.h" />
-    <ClInclude Include="Cell.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Simulation.h" />
   </ItemGroup>

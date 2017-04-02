@@ -9,11 +9,13 @@ trade with each other, in an imbalanced trade model.
 #include <Windows.h>
 #include "Manager.h"
 
+#define savefile "TestFile.txt"
+
 using namespace std;
 
 int main()
 {
-	Manager *managerObject = new Manager();
+	Manager *managerObject = new Manager( savefile );
 	managerObject->Run();
 	delete managerObject;
 	return 0;

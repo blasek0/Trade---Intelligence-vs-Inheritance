@@ -6,16 +6,17 @@ using namespace std;
 
 void Manager::Run()
 {
-	worldObject->Initialize();
+	worldObject->Initialize(500);
 	worldObject->Run();
 }
 
-Manager::Manager()
+Manager::Manager(char* filename)
 {
-	worldObject = Simulation::GetSimulationObject();
+	worldObject = Simulation::GetSimulationObject(filename);
 }
 
 
 Manager::~Manager()
 {
+	delete worldObject;
 }
