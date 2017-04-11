@@ -216,5 +216,4 @@ Simulation::Simulation()
 
 Simulation::~Simulation()
 {
-	AgentList.clear();
 }

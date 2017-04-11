@@ -72,11 +72,10 @@ void Agent::WriteAgentState()
 void Agent::InitialTrade()
 {
 	if (agentFood <= 0) return;
-	Simulation *simulationObject = Simulation::GetSimulationObject();
 	int temp[5] = { 0, 0, 0, 0, 0 };
 	for (int i = 0; i < 5; i++)
 	{
-		temp[i] = simulationObject->CreateRandomNumber(1, numOfAgents);
+		temp[i] = Simulation::GetSimulationObject()->CreateRandomNumber(1, numOfAgents);
 	}
 
 	for (int i = 0; i < 5; i++)
@@ -191,6 +190,7 @@ Agent::Agent(int idNumber, int intelligence, int startingMoney, char * saveFile)
 	outfile.write("Turn Number, ", 13);
 	outfile.write("\n", 1);
 	delete temp;
+	delete toWrite;
 }
 
 Agent::~Agent()
