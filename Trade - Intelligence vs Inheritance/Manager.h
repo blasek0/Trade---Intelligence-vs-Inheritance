@@ -4,9 +4,9 @@
 class Manager
 {
 public:
-	void Run();
 	Simulation *worldObject;
-	Manager(char* filename);
+	void Run();
+	Manager();
 	~Manager();
 };
 

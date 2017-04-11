@@ -2,21 +2,24 @@
 #include "Simulation.h"
 #include <Windows.h>
 
+#define numagents 1
+#define maxturns 1
+
 using namespace std;
 
 void Manager::Run()
 {
-	worldObject->Initialize(500);
-	worldObject->Run();
+	worldObject->Initialize(numagents);
+
+	worldObject->Run(maxturns);
 }
 
-Manager::Manager(char* filename)
+Manager::Manager()
 {
-	worldObject = Simulation::GetSimulationObject(filename);
+	worldObject = Simulation::GetSimulationObject();
 }
 
 
 Manager::~Manager()
 {
-	delete worldObject;
 }

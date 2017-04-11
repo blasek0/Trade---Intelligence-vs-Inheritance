@@ -5,25 +5,34 @@
 class Simulation
 {
 private: //Private Variables
-	double worldMoney;
+
+public:
+	int worldMoney;
+	int worldFood;
+	int worldProduction;
+	int worldLuxury;
 	int numOfAgents;
+	int turnNumber;
+	char saveFile[100];
+	int maxTurns;
 	std::vector<Agent> AgentList;
-	char SaveFile[65];
 
 public: //Public Functions
-	static Simulation* GetSimulationObject(char* filename);
+	static Simulation* GetSimulationObject();
 	void Initialize(int numAgents);
-	void Run();
+	void Run(int numTurns);
 	int CreateRandomNumber(int minValue, int maxValue);
 	int CreateNormalNumber(double mean, double stddev);
-	Agent TradeWithAgent(unsigned int agentNumber);
+	int foodUtility(int food);
+	int productionUtility(int production);
+	int luxuryUtility(int luxury);
 
 private: //Private Functions
 	void PrintWorldState();
 	void WriteWorldState();
 
 private: //Constructor
-	Simulation(char* filename);
+	Simulation();
 
 public: //Destructor
 	~Simulation();
