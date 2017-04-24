@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 #define numagents 1
-#define maxturns 1
+#define maxturns 50
 
 using namespace std;
 

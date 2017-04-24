@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <vector>
+#include <stdlib.h>
 
 #pragma once
 #pragma warning(disable:4996)
@@ -11,30 +13,160 @@ Simulation;
 
 using namespace std;
 
-void Agent::AgentPrint()
-{
-	cout << "\nAgent ID#: " << agentIDNumber;
-	cout << "\nAgent Type: " << agentType;
-	cout << "\nAgent Intelligence: " << agentIntelligence;
-	cout << "\nAgent NegotiateSkill: " << agentNegotiatingSkill;
-	cout << "\nAgent Money: " << agentMoney;
-	cout << "\nAgent Initial Money: " << agentInitialMoney;
-	cout << "\n";
-}
-
 //Primary turn function for agents
 void Agent::Execute()
 {
-	agentFood = (int)round(agentFood * 0.95);				//Food stocks decay
-	agentProduction = (int)round(agentProduction * 0.95);	//Production capabilities decay
+	//agentFood = (int)round(agentFood * 0.95);				//Food stocks decay
+	//agentProduction = (int)round(agentProduction * 0.95);	//Production capabilities decay
+	agentFood = agentFood - 1;
 	if (agentFood < 1)
 	{
 		ProduceFood();
 		return;
 	}
-	agentFood = agentFood - 1;								//Eats 1 food per turn
-	InitialTrade();											//Agents trade with surroundings
-	EvaluateOptions();										//Agents choose which option to perform
+	else
+	{
+		//InitialTrade();											//Agents trade with surroundings
+		EvaluateOptions();										//Agents choose which option to perform
+	}//Eats 1 food per turn
+}
+
+void Agent::InitialTrade()
+{
+	if (agentFood <= 0) return;
+	int temp[5] = { 0, 0, 0, 0, 0 };
+	for (int i = 0; i < 5; i++)
+	{
+		temp[i] = Simulation::GetSimulationObject()->CreateRandomNumber(1, numOfAgents);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		
+	}
+}
+
+void Agent::ProduceFood()
+{
+	int temp = agentFood;
+	agentFood += Simulation::GetSimulationObject()->CreateRandomNumber(agentIntelligence, 10);
+	temp = agentFood - temp;
+	Simulation::GetSimulationObject()->worldFood += temp;
+}
+
+void Agent::ProduceProduction()
+{
+	int temp = agentProduction;
+	agentProduction += Simulation::GetSimulationObject()->CreateRandomNumber(1, agentIntelligence);
+	temp = agentProduction - temp;
+	Simulation::GetSimulationObject()->worldProduction += temp;
+}
+
+void Agent::ProduceLuxury()
+{
+	int temp = agentLuxury;
+	agentLuxury += Simulation::GetSimulationObject()->CreateRandomNumber(1, agentIntelligence);
+	temp = agentLuxury - temp;
+	Simulation::GetSimulationObject()->worldLuxury += temp;
+}
+
+void Agent::ProduceMoney()
+{
+	int temp = agentMoney;
+	agentMoney = (int)(round((agentMoney*(100 + Simulation::GetSimulationObject()->CreateRandomNumber(3, 5 + agentIntelligence))/100.0)));
+	temp = agentMoney - temp;
+	Simulation::GetSimulationObject()->worldMoney += temp;
+}
+
+void Agent::EvaluateOptions()
+{
+	Simulation *simulationObject = Simulation::GetSimulationObject();
+	int foodUtility;
+	int productionUtility;
+	int luxuryUtility;
+	int moneyUtility;
+	int maxUtility;
+	foodUtility = 0;
+	productionUtility = 0;
+	luxuryUtility = 0;
+	moneyUtility = 0;
+	maxUtility = -1;
+
+	for (int i = 1; i < round(((double)agentIntelligence + 10.0) / 2.0)+1; i++)
+	{
+		foodUtility += simulationObject->FoodUtility(agentFood + i);
+	}
+	if (foodUtility > maxUtility)
+	{
+		turnOption = 1;
+		maxUtility = foodUtility;
+	}
+
+	productionUtility = simulationObject->ProductionUtility(round(((double)agentIntelligence + 1.0) / 2.0) + 1.0);
+	if (productionUtility > maxUtility)
+	{
+		turnOption = 2;
+		maxUtility = productionUtility;
+	}
+
+	if (ShareOfMoney() > 5 && agentProduction > 15)
+	{
+		luxuryUtility = simulationObject->LuxuryUtility(round(((double)agentIntelligence + 1.0) / 2.0) + 1.0);
+	}
+	else
+	{
+		luxuryUtility = 0;
+	}
+	if (luxuryUtility > maxUtility)
+	{
+		turnOption = 3;
+		maxUtility = luxuryUtility;
+	}
+
+	{
+		double temp = 0;
+		temp = ((double)agentMoney * (((100+(8 + agentIntelligence) / 2.0))/100.0)) - agentMoney;
+		moneyUtility = simulationObject->MoneyUtility((int)temp);
+	}
+	if (moneyUtility > maxUtility)
+	{
+		turnOption = 4;
+		maxUtility = moneyUtility;
+	}
+
+	switch (turnOption)
+	{
+	case 1:
+		ProduceFood();
+		break;
+	case 2:
+		ProduceProduction();
+		break;
+	case 3:
+		ProduceLuxury();
+		break;
+	case 4:
+		ProduceMoney();
+		break;
+	default:
+		ProduceFood();
+		break;
+	}
+}
+
+int Agent::PriceFood()
+{
+	return 0;
+}
+
+int Agent::PriceProduction()
+{
+	return 0;
+}
+
+int Agent::PriceLuxury()
+{
+	return 0;
 }
 
 double Agent::ShareOfMoney()
@@ -44,7 +176,15 @@ double Agent::ShareOfMoney()
 
 void Agent::WriteAgentState()
 {
-	fstream outfile;
+	if (!outfile.is_open())
+	{
+		outfile.open(agentFile, ios::app);
+	}
+	if (outfile.fail())
+	{
+		cout << "failed to open file\n";
+		system("pause");
+	}
 	char* temp = new char[65];
 	itoa(agentFood, temp, 10);
 	strcat(temp, ", ");
@@ -69,128 +209,93 @@ void Agent::WriteAgentState()
 	delete temp;
 }
 
-void Agent::InitialTrade()
+void Agent::WriteInitialState()
 {
-	if (agentFood <= 0) return;
-	int temp[5] = { 0, 0, 0, 0, 0 };
-	for (int i = 0; i < 5; i++)
-	{
-		temp[i] = Simulation::GetSimulationObject()->CreateRandomNumber(1, numOfAgents);
-	}
-
-	for (int i = 0; i < 5; i++)
-	{
-		
-	}
-}
-
-void Agent::ProduceFood()
-{
-	agentFood += Simulation::GetSimulationObject()->CreateRandomNumber(agentIntelligence, 10);
-}
-
-void Agent::ProduceProduction()
-{
-	agentProduction += Simulation::GetSimulationObject()->CreateRandomNumber(1, agentIntelligence);
-}
-
-void Agent::ProduceLuxury()
-{	//Currently unused
-}
-
-void Agent::EvaluateOptions()
-{
-	Simulation *simulationObject = Simulation::GetSimulationObject();
-	int foodUtility;
-	int productionUtility;
-	int luxuryUtility;
-	foodUtility = 0;
-	productionUtility = 0;
-	luxuryUtility = 0;
-	for (int i = 1; i < round(((double)agentIntelligence + 10.0) / 2.0)+1; i++)
-	{
-		foodUtility += simulationObject->foodUtility(agentFood + i);
-	}
-	for (int i = 1; i < round(((double)agentIntelligence + 1) / 2.0)+1; i++)
-	{
-		productionUtility += simulationObject->productionUtility(agentProduction + i);
-	}
-	if (foodUtility > productionUtility)
-	{
-		ProduceFood();
-	}
-	else
-	{
-		ProduceProduction();
-	}
-}
-
-double Agent::PriceFood()
-{
-	return 0.0;
-}
-
-double Agent::PriceProduction()
-{
-	return 0.0;
-}
-
-double Agent::PriceLuxury()
-{
-	return 0.0;
-}
-
-Agent::Agent(int idNumber, int intelligence, int startingMoney, char * saveFile)
-{
-	numOfAgents = Simulation::GetSimulationObject()->numOfAgents;
-	agentIDNumber = idNumber;
-	agentFood = 3;
-	agentProduction = 0;
-	agentLuxury = 0;
-	agentMoney = startingMoney;
-	Simulation::GetSimulationObject()->worldMoney += agentMoney;
-	agentInitialMoney = startingMoney;
-	agentNegotiatingSkill = 0;
-	agentIntelligence = Simulation::GetSimulationObject()->CreateRandomNumber(1, 5);
-	strcpy(agentFile, saveFile);
-	char* toWrite = new char[250];
+	char* toWrite = new char[100];
 	char* temp = new char[65];
-	itoa(agentIDNumber, temp, 10);
-	strcat(agentFile, temp);
-	strcat(agentFile, ".txt");
-	outfile.open(agentFile, ios::app);
-	outfile.write("Agent#, ", 8);
-	outfile.write("Intelligence, ", 14);
-	outfile.write("Initial Money, ", 15);
-	outfile.write("Negotiating Skill, ", 19);
-	outfile.write("\n", 1);
+	if (!outfile.is_open())
+	{
+		outfile.open(agentFile, ios::out, ios::trunc);
+	}
+	if (outfile.fail())
+	{
+		cout << "\nFailed to initially open file, " << agentFile;
+	}
+	strcpy(toWrite, "Agent#, Intelligence, Initial Money, \n");
+	outfile.write(toWrite, strlen(toWrite));
 	strcpy(temp, "");
 	strcpy(toWrite, "");
 	itoa(agentIDNumber, temp, 10);
 	strcat(temp, ", ");
-	outfile.write(temp, strlen(temp));
+	strcat(toWrite, temp);
 	strcpy(temp, "");
 	itoa(agentIntelligence, temp, 10);
 	strcat(temp, ", ");
-	outfile.write(temp, strlen(temp));
+	strcat(toWrite, temp);
 	strcpy(temp, "");
 	itoa(agentInitialMoney, temp, 10);
 	strcat(temp, ", ");
-	outfile.write(temp, strlen(temp));
-	strcpy(temp, "");
-	itoa(agentNegotiatingSkill, temp, 10);
-	strcat(temp, ", ");
-	outfile.write(temp, strlen(temp));
-	strcpy(temp, "");
-	outfile.write("\n", 1);
-	outfile.write("Food, ", 6);
-	outfile.write("Production, ", 12);
-	outfile.write("Luxury, ", 8);
-	outfile.write("Money, ", 7);
-	outfile.write("Turn Number, ", 13);
-	outfile.write("\n", 1);
+	strcat(toWrite, temp);
+	outfile.write(toWrite, strlen(toWrite));
+	strcpy(toWrite, "\nFood, Production, Luxury, Money, Turn Number, \n");
+	outfile.write(toWrite, strlen(toWrite));
+	outfile.close();
 	delete temp;
 	delete toWrite;
+}
+
+Agent::Agent(int idNumber, int intelligence, int startingMoney, char* saveFile)
+{
+	numOfAgents = Simulation::GetSimulationObject()->numOfAgents;
+	agentIDNumber = idNumber;
+	agentFood = 3;
+	agentProduction = 1;
+	agentLuxury = 1;
+	agentMoney = startingMoney;
+	Simulation::GetSimulationObject()->worldFood += agentFood;
+	Simulation::GetSimulationObject()->worldProduction += agentProduction;
+	Simulation::GetSimulationObject()->worldLuxury += agentLuxury;
+	Simulation::GetSimulationObject()->worldMoney += agentMoney;
+	agentInitialMoney = startingMoney;
+	agentIntelligence = Simulation::GetSimulationObject()->CreateRandomNumber(1, 5);
+	strcpy(agentFile, saveFile);
+	char* temp = new char[20];
+	itoa(agentIDNumber, temp, 10);
+	strcat(agentFile, temp);
+	strcat(agentFile, ".txt");
+	delete temp;
+	utilities.resize(5);
+	for (int i = 0; i < 5; i++)
+	{
+		utilities[i].resize(3);
+		for (int j = 0; j < 3; j++)
+		{
+			utilities[i][j] = 0;
+		}
+	}
+	WriteInitialState();
+}
+
+Agent::Agent(const Agent & tempAgent)
+{
+	numOfAgents = tempAgent.numOfAgents;
+	agentIDNumber = tempAgent.agentIDNumber;
+	agentFood = tempAgent.agentFood;
+	agentProduction = tempAgent.agentProduction;
+	agentLuxury = tempAgent.agentLuxury;
+	agentInitialMoney = tempAgent.agentInitialMoney;
+	agentMoney = tempAgent.agentMoney;
+	agentIntelligence = tempAgent.agentIntelligence;
+	strcpy(agentFile, tempAgent.agentFile);
+	utilities.resize(5);
+	for (int i = 0; i < 5; i++)
+	{
+		utilities[i].resize(3);
+		for (int j = 0; j < 3; j++)
+		{
+			utilities[i][j] = 0;
+		}
+	}
 }
 
 Agent::~Agent()

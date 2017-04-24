@@ -15,21 +15,21 @@ public:
 	int turnNumber;
 	char saveFile[100];
 	int maxTurns;
+	std::fstream outfile;
 	std::vector<Agent> AgentList;
+	Simulation* simulationObject;
 
 public: //Public Functions
 	static Simulation* GetSimulationObject();
 	void Initialize(int numAgents);
 	void Run(int numTurns);
 	int CreateRandomNumber(int minValue, int maxValue);
-	int CreateNormalNumber(double mean, double stddev);
-	int foodUtility(int food);
-	int productionUtility(int production);
-	int luxuryUtility(int luxury);
+	int FoodUtility(int food);
+	int ProductionUtility(int production);
+	int LuxuryUtility(int luxury);
+	int MoneyUtility(int money);
 
 private: //Private Functions
-	void PrintWorldState();
-	void WriteWorldState();
 
 private: //Constructor
 	Simulation();

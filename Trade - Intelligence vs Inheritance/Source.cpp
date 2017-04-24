@@ -31,7 +31,7 @@ int main()
 	double timeTaken = finalClock - initialClock;
 	timeTaken = timeTaken / frequency;
 	delete managerObject;
-	fstream outfile;
+/*	fstream outfile;
 	char temp[65];
 	strcpy(temp, "");
 	outfile.open("TimeTaken.txt", ios::app);
@@ -41,5 +41,5 @@ int main()
 	outfile.close();
 	cout << timeTaken << "\n";
 //	system("pause");
-	return 0;
+*/	return 0;
 }
