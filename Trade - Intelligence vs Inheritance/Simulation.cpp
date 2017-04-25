@@ -1,5 +1,6 @@
 #include "Simulation.h"
 #include "Agent.h"
+#include "Market.h"
 #include <Windows.h>
 #include <vector>
 #include <stdlib.h>
@@ -17,6 +18,7 @@
 #define turnstosave 10
 
 Agent;
+Market;
 
 using namespace std;
 
@@ -72,6 +74,7 @@ void Simulation::Run(int numTurns)
 				AgentList[i].WriteAgentState();
 			}
 		}
+		marketObject->SortMarkets();
 	}
 }
 
@@ -92,17 +95,17 @@ int Simulation::FoodUtility(int food)
 		case 1:
 			return 100;
 		case 2:
-			return 75;
+			return 175;
 		case 3: 
-			return 50;
+			return 225;
 		case 4:
-			return 25;
+			return 250;
 		case 5:
-			return 10;
+			return 260;
 		case 6:
-			return 5;
+			return 265;
 		default:
-			return 1;
+			return 259+food;
 	}
 }
 
@@ -123,6 +126,7 @@ int Simulation::MoneyUtility(int money)
 
 Simulation::Simulation()
 {
+	srand(time(NULL));
 	AgentList.clear();
 	turnNumber = 0;
 	worldMoney = 0;
@@ -132,6 +136,7 @@ Simulation::Simulation()
 	numOfAgents = 0;
 	strcpy(saveFile, "");
 	maxTurns = 0;
+	marketObject = new Market();
 }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Agent.h"
+#include "Market.h"
 #include <vector>
 
 class Simulation
@@ -7,7 +8,7 @@ class Simulation
 private: //Private Variables
 
 public:
-	int worldMoney;
+	double worldMoney;
 	int worldFood;
 	int worldProduction;
 	int worldLuxury;
@@ -17,7 +18,9 @@ public:
 	int maxTurns;
 	std::fstream outfile;
 	std::vector<Agent> AgentList;
-	Simulation* simulationObject;
+	static Simulation* simulationObject;
+	Market* marketObject;
+
 
 public: //Public Functions
 	static Simulation* GetSimulationObject();

@@ -1,4 +1,5 @@
 #include "Agent.h"
+#include "Market.h"
 #include "Simulation.h"
 #include <iostream>
 #include <cmath>
@@ -26,24 +27,12 @@ void Agent::Execute()
 	}
 	else
 	{
-		//InitialTrade();											//Agents trade with surroundings
 		EvaluateOptions();										//Agents choose which option to perform
 	}//Eats 1 food per turn
 }
 
 void Agent::InitialTrade()
 {
-	if (agentFood <= 0) return;
-	int temp[5] = { 0, 0, 0, 0, 0 };
-	for (int i = 0; i < 5; i++)
-	{
-		temp[i] = Simulation::GetSimulationObject()->CreateRandomNumber(1, numOfAgents);
-	}
-
-	for (int i = 0; i < 5; i++)
-	{
-		
-	}
 }
 
 void Agent::ProduceFood()
@@ -92,26 +81,23 @@ void Agent::EvaluateOptions()
 	moneyUtility = 0;
 	maxUtility = -1;
 
-	for (int i = 1; i < round(((double)agentIntelligence + 10.0) / 2.0)+1; i++)
-	{
-		foodUtility += simulationObject->FoodUtility(agentFood + i);
-	}
+	foodUtility = Simulation::GetSimulationObject()->FoodUtility(round(((double)agentIntelligence + 10.0) / 2.0)) - Simulation::GetSimulationObject()->FoodUtility(agentFood);
 	if (foodUtility > maxUtility)
 	{
 		turnOption = 1;
 		maxUtility = foodUtility;
 	}
 
-	productionUtility = simulationObject->ProductionUtility(round(((double)agentIntelligence + 1.0) / 2.0) + 1.0);
+	productionUtility = simulationObject->ProductionUtility(round(((double)agentIntelligence + 1.0) / 2.0));
 	if (productionUtility > maxUtility)
 	{
 		turnOption = 2;
 		maxUtility = productionUtility;
 	}
 
-	if (ShareOfMoney() > 5 && agentProduction > 15)
+	if ((ShareOfMoney() > 5 || agentIntelligence >= 4) && agentProduction > 15)
 	{
-		luxuryUtility = simulationObject->LuxuryUtility(round(((double)agentIntelligence + 1.0) / 2.0) + 1.0);
+		luxuryUtility = simulationObject->LuxuryUtility(round(((double)agentIntelligence + 1.0) / 2.0));
 	}
 	else
 	{
@@ -123,14 +109,13 @@ void Agent::EvaluateOptions()
 		maxUtility = luxuryUtility;
 	}
 
-	{
-		double temp = 0;
-		temp = ((double)agentMoney * (((100+(8 + agentIntelligence) / 2.0))/100.0)) - agentMoney;
-		moneyUtility = simulationObject->MoneyUtility((int)temp);
-	}
+	double temp = 0.0;
+	temp = (agentMoney * (((100+(8 + agentIntelligence) / 2.0))/100.0)) - agentMoney;
+	moneyUtility = simulationObject->MoneyUtility((int)temp);
+	
 	if (moneyUtility > maxUtility)
 	{
-		turnOption = 4;
+		//turnOption = 4;
 		maxUtility = moneyUtility;
 	}
 
@@ -154,24 +139,9 @@ void Agent::EvaluateOptions()
 	}
 }
 
-int Agent::PriceFood()
-{
-	return 0;
-}
-
-int Agent::PriceProduction()
-{
-	return 0;
-}
-
-int Agent::PriceLuxury()
-{
-	return 0;
-}
-
 double Agent::ShareOfMoney()
 {
-	return ((double)agentMoney / (double)Simulation::GetSimulationObject()->worldMoney * 100.0);
+	return (agentMoney / Simulation::GetSimulationObject()->worldMoney * 100.0);
 }
 
 void Agent::WriteAgentState()

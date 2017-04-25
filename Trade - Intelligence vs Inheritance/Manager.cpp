@@ -2,7 +2,7 @@
 #include "Simulation.h"
 #include <Windows.h>
 
-#define numagents 1
+#define numagents 50
 #define maxturns 50
 
 using namespace std;

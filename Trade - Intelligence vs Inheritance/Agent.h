@@ -8,7 +8,7 @@ class Agent
 public: //public variables
 	int agentIDNumber;
 	int numOfAgents;
-	int agentMoney;
+	double agentMoney;
 	int agentInitialMoney;
 	int agentIntelligence;
 	int turnOption;
@@ -21,9 +21,6 @@ public: //public variables
 
 public: //public functions
 	void Execute();
-	int PriceFood();
-	int PriceProduction();
-	int PriceLuxury();
 	double ShareOfMoney();
 	void WriteAgentState();
 	void WriteInitialState();
