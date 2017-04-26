@@ -10,6 +10,7 @@
 #include <random>
 #include <cstring>
 #include <string>
+#include <math.h>
 
 #pragma once
 #pragma warning(disable: 4996)

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <vector>
 #include <stdlib.h>
+#include <math.h>
+#include <stdlib.h>
 
 #pragma once
 #pragma warning(disable:4996)
@@ -17,6 +19,7 @@ using namespace std;
 //Primary turn function for agents
 void Agent::Execute()
 {
+	//cout << agentIDNumber << " Executing turn #: " << Simulation::GetSimulationObject()->turnNumber << "\n";
 	foodConfidenceInterval -= 0.2;
 	productionConfidenceInterval -= 0.2;
 	luxuryConfidenceInterval -= 0.2;
@@ -46,22 +49,20 @@ void Agent::TradeFood()
 {
 	Simulation *tempPointer = Simulation::GetSimulationObject();
 	double avgFood = (double)tempPointer->worldFood / (double)numOfAgents;
+	double price = tempPointer->GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval);
 	if ((double)agentFood > avgFood)
 	{
-		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (int)round(((double)agentFood - avgFood)));
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, price, (int)round(((double)agentFood - avgFood)));
 		return;
 	}
 	else if (turnOption == 1 && agentFood > 3)
 	{
-		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (agentFood - 3));
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, price, (agentFood - 3));
 		return;
 	}
 	else
 	{
-		tempPointer->marketObject->CreateBid(agentIDNumber, 1, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (int)round((avgFood - (double)agentFood)));
+		tempPointer->marketObject->CreateBid(agentIDNumber, 1, price, (int)round((avgFood - (double)agentFood)));
 		return;
 	}
 }
@@ -70,22 +71,20 @@ void Agent::TradeProduction()
 {
 	Simulation *tempPointer = Simulation::GetSimulationObject();
 	double avgProduction = (double)tempPointer->worldProduction / (double)numOfAgents;
+	double price = tempPointer->GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval);
 	if ((double)agentProduction > avgProduction && agentProduction > 15)
 	{
-		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), (agentProduction - 15));
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, price, (agentProduction - 15));
 		return;
 	}
 	else if (turnOption == 2 && agentProduction > 15 || agentProduction > 25)
 	{
-		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), (agentProduction - 15));
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, price, (agentProduction - 15));
 		return;
 	}
 	else
 	{
-		tempPointer->marketObject->CreateBid(agentIDNumber, 2, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), 15 - agentProduction + 1);
+		tempPointer->marketObject->CreateBid(agentIDNumber, 2, price, 15 - agentProduction + 1);
 		return;
 	}
 }
@@ -94,16 +93,15 @@ void Agent::TradeLuxury()
 {
 	Simulation *tempPointer = Simulation::GetSimulationObject();
 	double avgLuxury = (double)tempPointer->worldProduction / (double)numOfAgents;
+	double price = tempPointer->GetPriceBelief(tempPointer->marketObject->AvgLuxuryPrice(), luxuryConfidenceInterval);
 	if ((double)agentLuxury > avgLuxury && (ShareOfMoney() > 5 || agentIntelligence >= 4) && agentProduction > 15)
 	{
-		tempPointer->marketObject->CreateBid(agentIDNumber, 3, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgLuxuryPrice(), luxuryConfidenceInterval), agentLuxury - (int)avgLuxury);
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 3, price, (int)avgLuxury - agentLuxury);
 		return;
 	}
 	else
 	{
-		tempPointer->marketObject->CreateBid(agentIDNumber, 3, tempPointer->
-			GetPriceBelief(tempPointer->marketObject->AvgLuxuryPrice(), luxuryConfidenceInterval), agentLuxury - (int)avgLuxury);
+		tempPointer->marketObject->CreateBid(agentIDNumber, 3, price, (int)avgLuxury - agentLuxury);
 		return;
 	}
 }
@@ -419,6 +417,9 @@ Agent::Agent(int idNumber, int startingMoney, char* saveFile)
 	agentProduction = Simulation::GetSimulationObject()->CreateRandomNumber(3, 8);
 	agentLuxury = 1;
 	agentMoney = startingMoney;
+	foodConfidenceInterval = 0.0;
+	productionConfidenceInterval = 0.0;
+	luxuryConfidenceInterval = 0.0;
 	Simulation::GetSimulationObject()->worldFood += agentFood;
 	Simulation::GetSimulationObject()->worldProduction += agentProduction;
 	Simulation::GetSimulationObject()->worldLuxury += agentLuxury;
@@ -447,6 +448,9 @@ Agent::Agent(const Agent & tempAgent)
 	agentIntelligence = tempAgent.agentIntelligence;
 	agentNegotiatingSkill = tempAgent.agentNegotiatingSkill;
 	strcpy(agentFile, tempAgent.agentFile);
+	foodConfidenceInterval = tempAgent.foodConfidenceInterval;
+	productionConfidenceInterval = tempAgent.productionConfidenceInterval;
+	luxuryConfidenceInterval = tempAgent.luxuryConfidenceInterval;
 }
 
 Agent::~Agent()

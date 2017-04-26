@@ -7,6 +7,9 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <math.h>
+#include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 
@@ -34,9 +37,13 @@ void Market::SortMarkets()
 
 void Market::ResolveBooks()
 {
+	cout << "Starting food market.\n";
 	ResolveFoodMarket();
-	ResolveProductionMarket();
-	ResolveLuxuryMarket();
+	cout << "Starting production market.\n";
+	//ResolveProductionMarket();
+	cout << "Starting luxury market.\n";
+	//ResolveLuxuryMarket();
+	cout << "Finished luxury market.\n";
 }
 
 void Market::CreateBid(int buyingAgent, int commodityType, double buyPrice, int max)
@@ -77,47 +84,113 @@ void Market::CreateAsk(int sellingAgent, int commodityType, double sellPrice, in
 
 double Market::AvgFoodPrice()
 {
-	return netFoodSales / foodSales;
+	if (foodSales == 0)
+	{
+		return 1.0;
+	}
+	else
+	{
+		return netFoodSales / foodSales;
+	}
 }
 
 double Market::ShortAvgFoodPrice()
 {
-	double temp = 0.0;
-	for (int i = 0; i < FoodPricePeriod.size(); i++)
+	if (FoodPricePeriod.size() == 0)
 	{
-		temp += FoodPricePeriod[i];
+		double temp = 0.0;
+		for (int i = 0; i < FoodPricePeriod.size(); i++)
+		{
+			temp += FoodPricePeriod[i];
+		}
+		temp = temp / FoodPricePeriod.size();
+		if (temp > 0)
+		{
+			return temp;
+		}
+		else
+		{
+			return 1.0;
+		}
 	}
-	return temp / FoodPricePeriod.size();
+	else
+	{
+		return 1.0;
+	}
 }
 
 double Market::AvgProductionPrice()
 {
-	return netProductionSales / productionSales;
+	if (productionSales == 0)
+	{
+		return 1.0;
+	}
+	else
+	{
+		return netProductionSales / productionSales;
+	}
 }
 
 double Market::ShortAvgProductionPrice()
 {
-	double temp = 0.0;
-	for (int i = 0; i < ProductionPricePeriod.size(); i++)
+	if (ProductionPricePeriod.size() == 0)
 	{
-		temp += ProductionPricePeriod[i];
+		double temp = 0.0;
+		for (int i = 0; i < ProductionPricePeriod.size(); i++)
+		{
+			temp += ProductionPricePeriod[i];
+		}
+		temp = temp / ProductionPricePeriod.size();
+		if (temp > 0)
+		{
+			return temp;
+		}
+		else
+		{
+			return 1.0;
+		}
 	}
-	return temp / ProductionPricePeriod.size();
+	else
+	{
+		return 1.0;
+	}
 }
 
 double Market::AvgLuxuryPrice()
 {
-	return netLuxurySales / luxurySales;
+	if (luxurySales == 0)
+	{
+		return 1.0;
+	}
+	else
+	{
+		return netLuxurySales / luxurySales;
+	}
 }
 
 double Market::ShortAvgLuxuryPrice()
 {
-	double temp = 0.0;
-	for (int i = 0; i < LuxuryPricePeriod.size(); i++)
+	if (LuxuryPricePeriod.size() == 0)
 	{
-		temp += LuxuryPricePeriod[i];
+		double temp = 0.0;
+		for (int i = 0; i < LuxuryPricePeriod.size(); i++)
+		{
+			temp += LuxuryPricePeriod[i];
+		}
+		temp = temp / LuxuryPricePeriod.size();
+		if (temp > 0)
+		{
+			return temp;
+		}
+		else
+		{
+			return 1.0;
+		}
 	}
-	return temp / LuxuryPricePeriod.size();
+	else
+	{
+		return 1.0;
+	}
 }
 
 void Market::WriteMarketState()
@@ -228,14 +301,18 @@ void Market::ResolveFoodMarket()
 {
 	if (FoodPricePeriod.size() > turnsToAvg) FoodPricePeriod.erase(FoodPricePeriod.begin());
 	netFoodSalesPeriod = 0;
-	netFoodSales = 0;
+	foodSalesPeriod;
 	Simulation *worldObject = Simulation::GetSimulationObject();
+	cout << FoodBuyers.size() << "Food buyers. " << FoodSellers.size() << "Food sellers.\n";
+	int temp;
+	double price;
+	int buyingAgent;
+	int sellingAgent;
+
 	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0 && FoodBuyers[0].buyPrice >= FoodSellers[0].sellPrice)
 	{
-		int temp;
-		double price;
-		int buyingAgent = FoodBuyers[0].buyingAgent;
-		int sellingAgent = FoodSellers[0].sellingAgent;
+		buyingAgent = FoodBuyers[0].buyingAgent;
+		sellingAgent = FoodSellers[0].sellingAgent;
 		if (FoodBuyers[0].buyQuantity > FoodSellers[0].sellQuantity)
 		{
 			temp = FoodSellers[0].sellQuantity;
@@ -246,7 +323,7 @@ void Market::ResolveFoodMarket()
 		}
 		price = worldObject->GetPrice(FoodBuyers[0].buyPrice, FoodSellers[0].sellPrice,
 			buyingAgent, sellingAgent);
-		for (int i = 0; i < temp; i++)
+		for (int i = 0; i < temp+1; i++)
 		{
 			if (FoodBuyers[0].buyQuantity == 0)
 			{
@@ -258,7 +335,7 @@ void Market::ResolveFoodMarket()
 				FoodSellers.erase(FoodSellers.begin());
 				break;
 			}
-			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
+			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentFood > 0)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
@@ -270,10 +347,9 @@ void Market::ResolveFoodMarket()
 				foodSalesPeriod++;
 				FoodBuyers[0].buyQuantity--;
 				FoodSellers[0].sellQuantity--;
-			}
-			else
-			{
-				break;
+				cout << "Sale processed\n";
+				worldObject->AgentList[buyingAgent - 1].SuccessfulFoodBid(price);
+				worldObject->AgentList[sellingAgent - 1].SuccessfulFoodBid(price);
 			}
 		}
 	}
@@ -290,18 +366,21 @@ void Market::ResolveFoodMarket()
 	FoodPricePeriod.push_back(netFoodSalesPeriod / foodSalesPeriod);
 }
 
-void Market::ResolveProductionMarket()
-{
+void Market::ResolveProductionMarket() {
 	if (ProductionPricePeriod.size() > turnsToAvg) ProductionPricePeriod.erase(ProductionPricePeriod.begin());
 	netProductionSalesPeriod = 0;
-	netProductionSales = 0;
+	productionSalesPeriod;
 	Simulation *worldObject = Simulation::GetSimulationObject();
+	cout << ProductionBuyers.size() << "Production buyers. " << ProductionSellers.size() << "Production sellers.\n";
+	int temp;
+	double price;
+	int buyingAgent;
+	int sellingAgent;
+
 	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0 && ProductionBuyers[0].buyPrice >= ProductionSellers[0].sellPrice)
 	{
-		int temp;
-		double price;
-		int buyingAgent = ProductionBuyers[0].buyingAgent;
-		int sellingAgent = ProductionSellers[0].sellingAgent;
+		buyingAgent = ProductionBuyers[0].buyingAgent;
+		sellingAgent = ProductionSellers[0].sellingAgent;
 		if (ProductionBuyers[0].buyQuantity > ProductionSellers[0].sellQuantity)
 		{
 			temp = ProductionSellers[0].sellQuantity;
@@ -312,7 +391,7 @@ void Market::ResolveProductionMarket()
 		}
 		price = worldObject->GetPrice(ProductionBuyers[0].buyPrice, ProductionSellers[0].sellPrice,
 			buyingAgent, sellingAgent);
-		for (int i = 0; i < temp; i++)
+		for (int i = 0; i < temp + 1; i++)
 		{
 			if (ProductionBuyers[0].buyQuantity == 0)
 			{
@@ -324,7 +403,7 @@ void Market::ResolveProductionMarket()
 				ProductionSellers.erase(ProductionSellers.begin());
 				break;
 			}
-			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
+			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentProduction > 0)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
@@ -336,10 +415,9 @@ void Market::ResolveProductionMarket()
 				productionSalesPeriod++;
 				ProductionBuyers[0].buyQuantity--;
 				ProductionSellers[0].sellQuantity--;
-			}
-			else
-			{
-				break;
+				cout << "Sale processed\n";
+				worldObject->AgentList[buyingAgent - 1].SuccessfulProductionBid(price);
+				worldObject->AgentList[sellingAgent - 1].SuccessfulProductionBid(price);
 			}
 		}
 	}
@@ -356,18 +434,21 @@ void Market::ResolveProductionMarket()
 	ProductionPricePeriod.push_back(netProductionSalesPeriod / productionSalesPeriod);
 }
 
-void Market::ResolveLuxuryMarket()
-{
+void Market::ResolveLuxuryMarket() {
 	if (LuxuryPricePeriod.size() > turnsToAvg) LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
 	netLuxurySalesPeriod = 0;
-	netLuxurySales = 0;
+	luxurySalesPeriod;
 	Simulation *worldObject = Simulation::GetSimulationObject();
+	cout << LuxuryBuyers.size() << "Luxury buyers. " << LuxurySellers.size() << "Luxury sellers.\n";
+	int temp;
+	double price;
+	int buyingAgent;
+	int sellingAgent;
+
 	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0 && LuxuryBuyers[0].buyPrice >= LuxurySellers[0].sellPrice)
 	{
-		int temp;
-		double price;
-		int buyingAgent = LuxuryBuyers[0].buyingAgent;
-		int sellingAgent = LuxurySellers[0].sellingAgent;
+		buyingAgent = LuxuryBuyers[0].buyingAgent;
+		sellingAgent = LuxurySellers[0].sellingAgent;
 		if (LuxuryBuyers[0].buyQuantity > LuxurySellers[0].sellQuantity)
 		{
 			temp = LuxurySellers[0].sellQuantity;
@@ -378,7 +459,7 @@ void Market::ResolveLuxuryMarket()
 		}
 		price = worldObject->GetPrice(LuxuryBuyers[0].buyPrice, LuxurySellers[0].sellPrice,
 			buyingAgent, sellingAgent);
-		for (int i = 0; i < temp; i++)
+		for (int i = 0; i < temp + 1; i++)
 		{
 			if (LuxuryBuyers[0].buyQuantity == 0)
 			{
@@ -390,7 +471,7 @@ void Market::ResolveLuxuryMarket()
 				LuxurySellers.erase(LuxurySellers.begin());
 				break;
 			}
-			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
+			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentLuxury > 0)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
@@ -402,10 +483,9 @@ void Market::ResolveLuxuryMarket()
 				luxurySalesPeriod++;
 				LuxuryBuyers[0].buyQuantity--;
 				LuxurySellers[0].sellQuantity--;
-			}
-			else
-			{
-				break;
+				cout << "Sale processed\n";
+				worldObject->AgentList[buyingAgent - 1].SuccessfulLuxuryBid(price);
+				worldObject->AgentList[sellingAgent - 1].SuccessfulLuxuryBid(price);
 			}
 		}
 	}
