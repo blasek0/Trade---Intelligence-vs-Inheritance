@@ -34,8 +34,13 @@ Simulation * Simulation::GetSimulationObject()
 
 double Simulation::GetPrice(double buyPrice, double sellPrice, int buyingAgent, int sellingAgent)
 {
-	//EXPAND UPON LATER
-	return (buyPrice + sellPrice) / 2.0;
+	double moneyDifference = std::abs(AgentList[sellingAgent - 1].ShareOfMoney() - AgentList[buyingAgent - 1].ShareOfMoney());
+	int negotiatingSkillDifference = std::abs(AgentList[sellingAgent - 1].agentNegotiatingSkill - AgentList[buyingAgent - 1].agentNegotiatingSkill);
+	int intelligenceDifference = std::abs(AgentList[sellingAgent - 1].agentIntelligence - AgentList[buyingAgent - 1].agentIntelligence);
+	double priceFactor = moneyDifference + 5 * negotiatingSkillDifference + 2 * intelligenceDifference;
+	if (priceFactor > 50) priceFactor = 50;
+	if (priceFactor < -50) priceFactor = -50;
+	return (((buyPrice + sellPrice) / 2.0) * ((100.0+priceFactor)/100.0));
 }
 
 void Simulation::Initialize(int numAgents)
