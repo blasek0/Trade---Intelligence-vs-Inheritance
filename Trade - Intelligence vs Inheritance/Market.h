@@ -7,18 +7,19 @@ class Market
 {
 	//public variables
 public:
+	int turnsToAvg;
 	double netFoodSales;
 	double netProductionSales;
 	double netLuxurySales;
 	double netFoodSalesPeriod;
 	double netProductionSalesPeriod;
 	double netLuxurySalesPeriod;
-	double foodSalesPeriod;
-	double productionSalesPeriod;
-	double luxurySalesPeriod;
-	double foodSales;
-	double productionSales;
-	double luxurySales;
+	int foodSalesPeriod;
+	int productionSalesPeriod;
+	int luxurySalesPeriod;
+	int foodSales;
+	int productionSales;
+	int luxurySales;
 	std::vector<double> FoodPricePeriod;
 	std::vector<double> ProductionPricePeriod;
 	std::vector<double> LuxuryPricePeriod;

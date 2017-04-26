@@ -17,6 +17,9 @@ using namespace std;
 //Primary turn function for agents
 void Agent::Execute()
 {
+	foodConfidenceInterval -= 0.2;
+	productionConfidenceInterval -= 0.2;
+	luxuryConfidenceInterval -= 0.2;
 	//agentFood = (int)round(agentFood * 0.95);				//Food stocks decay
 	//agentProduction = (int)round(agentProduction * 0.95);	//Production capabilities decay
 	agentFood = agentFood - 1;
@@ -34,30 +37,95 @@ void Agent::Execute()
 
 void Agent::Trade()
 {
-	
+	TradeFood();
+	TradeProduction();
+	TradeLuxury();
 }
 
 void Agent::TradeFood()
 {
-
+	Simulation *tempPointer = Simulation::GetSimulationObject();
+	double avgFood = (double)tempPointer->worldFood / (double)numOfAgents;
+	if ((double)agentFood > avgFood)
+	{
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (int)round(((double)agentFood - avgFood)));
+		return;
+	}
+	else if (turnOption == 1 && agentFood > 3)
+	{
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (agentFood - 3));
+		return;
+	}
+	else
+	{
+		tempPointer->marketObject->CreateBid(agentIDNumber, 1, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgFoodPrice(), foodConfidenceInterval), (int)round((avgFood - (double)agentFood)));
+		return;
+	}
 }
 
 void Agent::TradeProduction()
 {
-
+	Simulation *tempPointer = Simulation::GetSimulationObject();
+	double avgProduction = (double)tempPointer->worldProduction / (double)numOfAgents;
+	if ((double)agentProduction > avgProduction && agentProduction > 15)
+	{
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), (agentProduction - 15));
+		return;
+	}
+	else if (turnOption == 2 && agentProduction > 15 || agentProduction > 25)
+	{
+		tempPointer->marketObject->CreateAsk(agentIDNumber, 2, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), (agentProduction - 15));
+		return;
+	}
+	else
+	{
+		tempPointer->marketObject->CreateBid(agentIDNumber, 2, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgProductionPrice(), productionConfidenceInterval), 15 - agentProduction + 1);
+		return;
+	}
 }
 
 void Agent::TradeLuxury()
 {
-
+	Simulation *tempPointer = Simulation::GetSimulationObject();
+	double avgLuxury = (double)tempPointer->worldProduction / (double)numOfAgents;
+	if ((double)agentLuxury > avgLuxury && (ShareOfMoney() > 5 || agentIntelligence >= 4) && agentProduction > 15)
+	{
+		tempPointer->marketObject->CreateBid(agentIDNumber, 3, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgLuxuryPrice(), luxuryConfidenceInterval), agentLuxury - (int)avgLuxury);
+		return;
+	}
+	else
+	{
+		tempPointer->marketObject->CreateBid(agentIDNumber, 3, tempPointer->
+			GetPriceBelief(tempPointer->marketObject->AvgLuxuryPrice(), luxuryConfidenceInterval), agentLuxury - (int)avgLuxury);
+		return;
+	}
 }
 
 void Agent::ProduceFood()
 {
 	int temp = agentFood;
-	agentFood += Simulation::GetSimulationObject()->CreateRandomNumber(agentIntelligence, 10);
+	if (agentProduction == 0)
+	{
+		agentFood += Simulation::GetSimulationObject()->CreateRandomNumber(agentIntelligence, 5);
+	}
+	else
+	{
+		agentFood += Simulation::GetSimulationObject()->CreateRandomNumber(agentIntelligence, 10);
+	}
 	temp = agentFood - temp;
 	Simulation::GetSimulationObject()->worldFood += temp;
+	if (Simulation::GetSimulationObject()->CreateRandomNumber(1, 4) == 4)
+	{
+		agentProduction--;
+		Simulation::GetSimulationObject()->worldProduction--;
+	}
 }
 
 void Agent::ProduceProduction()
@@ -66,6 +134,8 @@ void Agent::ProduceProduction()
 	agentProduction += Simulation::GetSimulationObject()->CreateRandomNumber(1, agentIntelligence);
 	temp = agentProduction - temp;
 	Simulation::GetSimulationObject()->worldProduction += temp;
+	agentFood -= 2;
+	Simulation::GetSimulationObject()->worldFood -= 2;
 }
 
 void Agent::ProduceLuxury()
@@ -74,6 +144,10 @@ void Agent::ProduceLuxury()
 	agentLuxury += Simulation::GetSimulationObject()->CreateRandomNumber(1, agentIntelligence);
 	temp = agentLuxury - temp;
 	Simulation::GetSimulationObject()->worldLuxury += temp;
+	agentFood -= 2;
+	agentProduction -= 5;
+	Simulation::GetSimulationObject()->worldFood -= 2;
+	Simulation::GetSimulationObject()->worldProduction -= 5;
 }
 
 void Agent::ProduceMoney()
@@ -98,7 +172,14 @@ void Agent::EvaluateOptions()
 	moneyUtility = 0;
 	maxUtility = -1;
 
-	foodUtility = Simulation::GetSimulationObject()->FoodUtility(round(((double)agentIntelligence + 10.0) / 2.0)) - Simulation::GetSimulationObject()->FoodUtility(agentFood);
+	if (agentProduction > 0)
+	{
+		foodUtility = Simulation::GetSimulationObject()->FoodUtility(round(((double)agentIntelligence + 10.0) / 2.0)) - Simulation::GetSimulationObject()->FoodUtility(agentFood);
+	}
+	else
+	{
+		foodUtility = Simulation::GetSimulationObject()->FoodUtility(round(((double)agentIntelligence + 5.0) / 2.0)) - Simulation::GetSimulationObject()->FoodUtility(agentFood);
+	}
 	if (foodUtility > maxUtility)
 	{
 		turnOption = 1;
@@ -106,13 +187,13 @@ void Agent::EvaluateOptions()
 	}
 
 	productionUtility = simulationObject->ProductionUtility(round(((double)agentIntelligence + 1.0) / 2.0));
-	if (productionUtility > maxUtility)
+	if (productionUtility > maxUtility && agentFood >= 2)
 	{
 		turnOption = 2;
 		maxUtility = productionUtility;
 	}
 
-	if ((ShareOfMoney() > 5 || agentIntelligence >= 4) && agentProduction > 15)
+	if ((ShareOfMoney() > 5 || agentIntelligence >= 4) && agentProduction > 15 && agentFood >= 2)
 	{
 		luxuryUtility = simulationObject->LuxuryUtility(round(((double)agentIntelligence + 1.0) / 2.0));
 	}
@@ -126,13 +207,15 @@ void Agent::EvaluateOptions()
 		maxUtility = luxuryUtility;
 	}
 
-	double temp = 0.0;
-	temp = (agentMoney * (((100+(8 + agentIntelligence) / 2.0))/100.0)) - agentMoney;
-	moneyUtility = simulationObject->MoneyUtility((int)temp);
-	
+	if (ShareOfMoney() > .1)
+	{
+		double temp = 0.0;
+		temp = (agentMoney * (((100 + (8 + agentIntelligence) / 2.0)) / 100.0)) - agentMoney;
+		moneyUtility = simulationObject->MoneyUtility((int)temp);
+	}
 	if (moneyUtility > maxUtility)
 	{
-		//turnOption = 4;
+		turnOption = 4;
 		maxUtility = moneyUtility;
 	}
 
@@ -208,7 +291,7 @@ void Agent::WriteInitialState()
 	{
 		cout << "\nFailed to initially open file, " << agentFile;
 	}
-	strcpy(toWrite, "Agent#, Intelligence, Initial Money, \n");
+	strcpy(toWrite, "Agent#, Intelligence, Negotiating Skill, Initial Money, \n");
 	outfile.write(toWrite, strlen(toWrite));
 	strcpy(temp, "");
 	strcpy(toWrite, "");
@@ -217,6 +300,10 @@ void Agent::WriteInitialState()
 	strcat(toWrite, temp);
 	strcpy(temp, "");
 	itoa(agentIntelligence, temp, 10);
+	strcat(temp, ", ");
+	strcat(toWrite, temp);
+	strcpy(temp, "");
+	itoa(agentNegotiatingSkill, temp, 10);
 	strcat(temp, ", ");
 	strcat(toWrite, temp);
 	strcpy(temp, "");
@@ -233,34 +320,103 @@ void Agent::WriteInitialState()
 
 void Agent::FailedFoodBid(double price)
 {
+	foodConfidenceInterval--;
+	if (foodConfidenceInterval < 0)
+	{
+		foodConfidenceInterval = 0;
+	}
 }
 
 void Agent::FailedProductionBid(double price)
 {
+	productionConfidenceInterval--;
+	if (productionConfidenceInterval < 0)
+	{
+		productionConfidenceInterval = 0;
+	}
 }
 
 void Agent::FailedLuxuryBid(double price)
 {
+	luxuryConfidenceInterval--;
+	if (luxuryConfidenceInterval < 0)
+	{
+		luxuryConfidenceInterval = 0;
+	}
 }
 
 void Agent::SuccessfulFoodBid(double price)
 {
+	foodConfidenceInterval++;
+	if (foodConfidenceInterval > 40)
+	{
+		foodConfidenceInterval = 40;
+	}
 }
 
 void Agent::SuccessfulProductionBid(double price)
 {
+	productionConfidenceInterval++;
+	if (productionConfidenceInterval > 40)
+	{
+		productionConfidenceInterval = 40;
+	}
 }
 
 void Agent::SuccessfulLuxuryBid(double price)
 {
+	luxuryConfidenceInterval++;
+	if (luxuryConfidenceInterval > 40)
+	{
+		luxuryConfidenceInterval = 40;
+	}
+}
+
+double Agent::GetFoodConfidence()
+{
+	if (foodConfidenceInterval > 40.0)
+	{
+		return 40.0;
+	}
+	else if (foodConfidenceInterval < 0)
+	{
+		return 0.0;
+	}
+	return foodConfidenceInterval;
+}
+
+double Agent::GetProductionConfidence()
+{
+	if (productionConfidenceInterval > 40.0)
+	{
+		return 40.0;
+	}
+	else if (productionConfidenceInterval < 0)
+	{
+		return 0.0;
+	}
+	return productionConfidenceInterval;
+}
+
+double Agent::GetLuxuryConfidence()
+{
+	if (luxuryConfidenceInterval > 40.0)
+	{
+		return 40.0;
+	}
+	else if (luxuryConfidenceInterval < 0)
+	{
+		return 0.0;
+	}
+	return luxuryConfidenceInterval;
 }
 
 Agent::Agent(int idNumber, int startingMoney, char* saveFile)
 {
 	numOfAgents = Simulation::GetSimulationObject()->numOfAgents;
 	agentIDNumber = idNumber;
-	agentFood = 3;
-	agentProduction = 1;
+	agentFood = Simulation::GetSimulationObject()->CreateRandomNumber(5, 15);
+	agentProduction = Simulation::GetSimulationObject()->CreateRandomNumber(3, 8);
 	agentLuxury = 1;
 	agentMoney = startingMoney;
 	Simulation::GetSimulationObject()->worldFood += agentFood;

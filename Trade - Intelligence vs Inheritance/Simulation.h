@@ -25,7 +25,8 @@ public:
 public: //Public Functions
 	static Simulation* GetSimulationObject();
 	double GetPrice(double buyPrice, double sellPrice, int buyingAgent, int sellingAgent);
-	void Initialize(int numAgents);
+	double GetPriceBelief(double price, double confidenceInterval);
+	void Initialize(int numAgents, int turnsToAvg);
 	void Run(int numTurns);
 	int CreateRandomNumber(int minValue, int maxValue);
 	int FoodUtility(int food);

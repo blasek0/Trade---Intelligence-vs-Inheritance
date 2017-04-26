@@ -34,17 +34,30 @@ Simulation * Simulation::GetSimulationObject()
 
 double Simulation::GetPrice(double buyPrice, double sellPrice, int buyingAgent, int sellingAgent)
 {
-	double moneyDifference = std::abs(AgentList[sellingAgent - 1].ShareOfMoney() - AgentList[buyingAgent - 1].ShareOfMoney());
-	int negotiatingSkillDifference = std::abs(AgentList[sellingAgent - 1].agentNegotiatingSkill - AgentList[buyingAgent - 1].agentNegotiatingSkill);
-	int intelligenceDifference = std::abs(AgentList[sellingAgent - 1].agentIntelligence - AgentList[buyingAgent - 1].agentIntelligence);
-	double priceFactor = moneyDifference + 5 * negotiatingSkillDifference + 2 * intelligenceDifference;
+	double moneyDifference = AgentList[sellingAgent - 1].ShareOfMoney() - AgentList[buyingAgent - 1].ShareOfMoney();
+	int negotiatingSkillDifference = AgentList[sellingAgent - 1].agentNegotiatingSkill - AgentList[buyingAgent - 1].agentNegotiatingSkill;
+	int intelligenceDifference = AgentList[sellingAgent - 1].agentIntelligence - AgentList[buyingAgent - 1].agentIntelligence;
+	double priceFactor = moneyDifference + 10 * negotiatingSkillDifference + 2 * intelligenceDifference;
 	if (priceFactor > 50) priceFactor = 50;
 	if (priceFactor < -50) priceFactor = -50;
 	return (((buyPrice + sellPrice) / 2.0) * ((100.0+priceFactor)/100.0));
 }
 
-void Simulation::Initialize(int numAgents)
+double Simulation::GetPriceBelief(double price, double confidenceInterval)
 {
+	if (price == 0)
+	{
+		return (1 * ((CreateRandomNumber(50 + confidenceInterval, 150 - confidenceInterval)) / 100.0));
+	}
+	else
+	{
+		return (price * ((CreateRandomNumber(50 + confidenceInterval, 150 - confidenceInterval)) / 100.0));
+	}
+}
+
+void Simulation::Initialize(int numAgents, int turnsToAvg)
+{
+	marketObject->turnsToAvg = turnsToAvg;
 	numOfAgents = numAgents;
 	int tempVar;
 	char* temp = new char[65];

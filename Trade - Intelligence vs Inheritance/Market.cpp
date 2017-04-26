@@ -131,7 +131,7 @@ void Market::WriteMarketState()
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
-	strcpy(temp, std::to_string(foodSales).c_str()); //Total#
+	itoa(foodSales, temp, 10); //Total#
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
@@ -143,7 +143,7 @@ void Market::WriteMarketState()
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
-	strcpy(temp, std::to_string(productionSales).c_str()); //Total#
+	itoa(productionSales, temp, 10); //Total#
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
@@ -155,7 +155,7 @@ void Market::WriteMarketState()
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
-	strcpy(temp, std::to_string(luxurySales).c_str()); //Total#
+	itoa(luxurySales, temp, 10); //Total#
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
@@ -226,14 +226,12 @@ void Market::CreateLuxuryAsk(int sellingAgent, double sellPrice, int min)
 
 void Market::ResolveFoodMarket()
 {
-	if (FoodPricePeriod.size() != 0) FoodPricePeriod.erase(FoodPricePeriod.begin());
+	if (FoodPricePeriod.size() > turnsToAvg) FoodPricePeriod.erase(FoodPricePeriod.begin());
 	netFoodSalesPeriod = 0;
 	netFoodSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0 && FoodBuyers[0].buyPrice > FoodSellers[0].sellPrice)
+	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0 && FoodBuyers[0].buyPrice >= FoodSellers[0].sellPrice)
 	{
-		FoodBuyers.erase(FoodBuyers.begin());	
-		FoodSellers.erase(FoodSellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = FoodBuyers[0].buyingAgent;
@@ -250,6 +248,16 @@ void Market::ResolveFoodMarket()
 			buyingAgent, sellingAgent);
 		for (int i = 0; i < temp; i++)
 		{
+			if (FoodBuyers[0].buyQuantity == 0)
+			{
+				FoodBuyers.erase(FoodBuyers.begin());
+				break;
+			}
+			if (FoodSellers[0].sellQuantity == 0)
+			{
+				FoodSellers.erase(FoodSellers.begin());
+				break;
+			}
 			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
@@ -260,6 +268,8 @@ void Market::ResolveFoodMarket()
 				netFoodSalesPeriod += price;
 				foodSales++;
 				foodSalesPeriod++;
+				FoodBuyers[0].buyQuantity--;
+				FoodSellers[0].sellQuantity--;
 			}
 			else
 			{
@@ -282,14 +292,12 @@ void Market::ResolveFoodMarket()
 
 void Market::ResolveProductionMarket()
 {
-	if (ProductionPricePeriod.size() != 0) ProductionPricePeriod.erase(ProductionPricePeriod.begin());
+	if (ProductionPricePeriod.size() > turnsToAvg) ProductionPricePeriod.erase(ProductionPricePeriod.begin());
 	netProductionSalesPeriod = 0;
 	netProductionSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0 && ProductionBuyers[0].buyPrice > ProductionSellers[0].sellPrice)
+	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0 && ProductionBuyers[0].buyPrice >= ProductionSellers[0].sellPrice)
 	{
-		while (ProductionBuyers[0].buyQuantity == 0) ProductionBuyers.erase(ProductionBuyers.begin());
-		while (ProductionSellers[0].sellQuantity == 0) ProductionSellers.erase(ProductionSellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = ProductionBuyers[0].buyingAgent;
@@ -306,6 +314,16 @@ void Market::ResolveProductionMarket()
 			buyingAgent, sellingAgent);
 		for (int i = 0; i < temp; i++)
 		{
+			if (ProductionBuyers[0].buyQuantity == 0)
+			{
+				ProductionBuyers.erase(ProductionBuyers.begin());
+				break;
+			}
+			if (ProductionSellers[0].sellQuantity == 0)
+			{
+				ProductionSellers.erase(ProductionSellers.begin());
+				break;
+			}
 			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
@@ -316,6 +334,8 @@ void Market::ResolveProductionMarket()
 				netProductionSalesPeriod += price;
 				productionSales++;
 				productionSalesPeriod++;
+				ProductionBuyers[0].buyQuantity--;
+				ProductionSellers[0].sellQuantity--;
 			}
 			else
 			{
@@ -338,14 +358,12 @@ void Market::ResolveProductionMarket()
 
 void Market::ResolveLuxuryMarket()
 {
-	if (LuxuryPricePeriod.size() != 0) LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
+	if (LuxuryPricePeriod.size() > turnsToAvg) LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
 	netLuxurySalesPeriod = 0;
 	netLuxurySales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0 && LuxuryBuyers[0].buyPrice > LuxurySellers[0].sellPrice)
+	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0 && LuxuryBuyers[0].buyPrice >= LuxurySellers[0].sellPrice)
 	{
-		while (LuxuryBuyers[0].buyQuantity == 0) LuxuryBuyers.erase(LuxuryBuyers.begin());
-		while (LuxurySellers[0].sellQuantity == 0) LuxurySellers.erase(LuxurySellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = LuxuryBuyers[0].buyingAgent;
@@ -362,6 +380,16 @@ void Market::ResolveLuxuryMarket()
 			buyingAgent, sellingAgent);
 		for (int i = 0; i < temp; i++)
 		{
+			if (LuxuryBuyers[0].buyQuantity == 0)
+			{
+				LuxuryBuyers.erase(LuxuryBuyers.begin());
+				break;
+			}
+			if (LuxurySellers[0].sellQuantity == 0)
+			{
+				LuxurySellers.erase(LuxurySellers.begin());
+				break;
+			}
 			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price)
 			{
 				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
@@ -372,6 +400,8 @@ void Market::ResolveLuxuryMarket()
 				netLuxurySalesPeriod += price;
 				luxurySales++;
 				luxurySalesPeriod++;
+				LuxuryBuyers[0].buyQuantity--;
+				LuxurySellers[0].sellQuantity--;
 			}
 			else
 			{
@@ -403,6 +433,7 @@ Market::Market()
 	FoodPricePeriod.resize(0);
 	ProductionPricePeriod.resize(0);
 	LuxuryPricePeriod.resize(0);
+	turnsToAvg = 0;
 	netFoodSales = 0.0;
 	netProductionSales = 0.0;
 	netLuxurySales = 0.0;
@@ -421,7 +452,7 @@ Market::Market()
 		outfile.open(saveFile, ios::out, ios::trunc);
 	}
 	char* temp = new char[255];
-	strcpy(temp, "Avg. Food Price, # sales, 10 turn avg, Avg. Production Price, # sales, 10 turn avg, Avg. Luxury Price, # sales, 10 turn avg, Turn Number, ");
+	strcpy(temp, "Avg. Food Price, # sales, short term avg, Avg. Production Price, # sales, short term avg, Avg. Luxury Price, # sales, short term avg, Turn Number, ");
 	outfile.write(temp, strlen(temp));
 	outfile.write("\n", 1);
 	outfile.close();

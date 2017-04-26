@@ -33,6 +33,9 @@ public: //public functions
 	void SuccessfulFoodBid(double price);
 	void SuccessfulProductionBid(double price);
 	void SuccessfulLuxuryBid(double price);
+	double GetFoodConfidence();
+	double GetProductionConfidence();
+	double GetLuxuryConfidence();
 
 private: //private functions
 	void Trade();
