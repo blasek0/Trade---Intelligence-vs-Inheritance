@@ -36,6 +36,9 @@ public: //public functions
 
 private: //private functions
 	void Trade();
+	void TradeFood();
+	void TradeProduction();
+	void TradeLuxury();
 	void ProduceFood();
 	void ProduceProduction();
 	void ProduceLuxury();

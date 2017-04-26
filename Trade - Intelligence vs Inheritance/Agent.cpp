@@ -27,11 +27,25 @@ void Agent::Execute()
 	}
 	else
 	{
-		EvaluateOptions();										//Agents choose which option to perform
+		EvaluateOptions();									//Agents choose which option to perform
+		Trade();
 	}//Eats 1 food per turn
 }
 
 void Agent::Trade()
+{
+	
+}
+
+void Agent::TradeFood()
+{
+}
+
+void Agent::TradeProduction()
+{
+}
+
+void Agent::TradeLuxury()
 {
 }
 

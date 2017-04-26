@@ -77,14 +77,44 @@ double Market::AvgFoodPrice()
 	return netFoodSales / foodSales;
 }
 
+double Market::ShortAvgFoodPrice()
+{
+	double temp;
+	for (int i = 0; i < FoodPricePeriod.size(); i++)
+	{
+		temp += FoodPricePeriod[i];
+	}
+	return temp / FoodPricePeriod.size();
+}
+
 double Market::AvgProductionPrice()
 {
 	return netProductionSales / productionSales;
 }
 
+double Market::ShortAvgProductionPrice()
+{
+	double temp;
+	for (int i = 0; i < ProductionPricePeriod.size(); i++)
+	{
+		temp += ProductionPricePeriod[i];
+	}
+	return temp / ProductionPricePeriod.size();
+}
+
 double Market::AvgLuxuryPrice()
 {
 	return netLuxurySales / luxurySales;
+}
+
+double Market::ShortAvgLuxuryPrice()
+{
+	double temp;
+	for (int i = 0; i < LuxuryPricePeriod.size(); i++)
+	{
+		temp += LuxuryPricePeriod[i];
+	}
+	return temp / LuxuryPricePeriod.size();
 }
 
 void Market::CreateFoodBid(int buyingAgent, double buyPrice, int max)
@@ -143,7 +173,7 @@ void Market::CreateLuxuryAsk(int sellingAgent, double sellPrice, int min)
 
 void Market::ResolveFoodMarket()
 {
-	FoodPricePeriod.erase(FoodPricePeriod.begin());
+	if (FoodPricePeriod.size() != 0) FoodPricePeriod.erase(FoodPricePeriod.begin());
 	netFoodSalesPeriod = 0;
 	netFoodSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
@@ -199,7 +229,7 @@ void Market::ResolveFoodMarket()
 
 void Market::ResolveProductionMarket()
 {
-	ProductionPricePeriod.erase(ProductionPricePeriod.begin());
+	if (ProductionPricePeriod.size() != 0) ProductionPricePeriod.erase(ProductionPricePeriod.begin());
 	netProductionSalesPeriod = 0;
 	netProductionSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
@@ -255,7 +285,7 @@ void Market::ResolveProductionMarket()
 
 void Market::ResolveLuxuryMarket()
 {
-	LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
+	if (LuxuryPricePeriod.size() != 0) LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
 	netLuxurySalesPeriod = 0;
 	netLuxurySales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();

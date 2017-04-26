@@ -16,7 +16,6 @@ trade with each other, in an imbalanced trade model.
 using namespace std;
 
 int main()
-
 {
 	LARGE_INTEGER li;
 	QueryPerformanceFrequency(&li);

@@ -144,8 +144,11 @@ public:
 	void CreateBid(int buyingAgent, int commodityType, double buyPrice, int max);
 	void CreateAsk(int sellingAgent, int commodityType, double sellPrice, int min);
 	double AvgFoodPrice();
+	double ShortAvgFoodPrice();
 	double AvgProductionPrice();
+	double ShortAvgProductionPrice();
 	double AvgLuxuryPrice();
+	double ShortAvgLuxuryPrice();
 
 private:
 	void CreateFoodBid(int buyingAgent, double buyPrice, int max);
