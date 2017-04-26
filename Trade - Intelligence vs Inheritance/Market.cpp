@@ -4,6 +4,9 @@
 #include <vector>
 #include <algorithm>
 #include <thread>
+#include <fstream>
+#include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -79,7 +82,7 @@ double Market::AvgFoodPrice()
 
 double Market::ShortAvgFoodPrice()
 {
-	double temp;
+	double temp = 0.0;
 	for (int i = 0; i < FoodPricePeriod.size(); i++)
 	{
 		temp += FoodPricePeriod[i];
@@ -94,7 +97,7 @@ double Market::AvgProductionPrice()
 
 double Market::ShortAvgProductionPrice()
 {
-	double temp;
+	double temp = 0.0;
 	for (int i = 0; i < ProductionPricePeriod.size(); i++)
 	{
 		temp += ProductionPricePeriod[i];
@@ -109,12 +112,62 @@ double Market::AvgLuxuryPrice()
 
 double Market::ShortAvgLuxuryPrice()
 {
-	double temp;
+	double temp = 0.0;
 	for (int i = 0; i < LuxuryPricePeriod.size(); i++)
 	{
 		temp += LuxuryPricePeriod[i];
 	}
 	return temp / LuxuryPricePeriod.size();
+}
+
+void Market::WriteMarketState()
+{
+	if (!outfile.is_open())
+	{
+		outfile.open(saveFile, ios::app);
+	}
+	char* temp = new char[255];
+	strcpy(temp, std::to_string(AvgFoodPrice()).c_str()); //Total$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(foodSales).c_str()); //Total#
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(ShortAvgFoodPrice()).c_str());//Short-term$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(AvgProductionPrice()).c_str()); //Total$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(productionSales).c_str()); //Total#
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(ShortAvgProductionPrice()).c_str());//Short-term$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(AvgLuxuryPrice()).c_str()); //Total$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(luxurySales).c_str()); //Total#
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	strcpy(temp, std::to_string(ShortAvgLuxuryPrice()).c_str());//Short-term$
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(Simulation::GetSimulationObject()->turnNumber, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	outfile.write("\n", 1);
+	delete temp;
 }
 
 void Market::CreateFoodBid(int buyingAgent, double buyPrice, int max)
@@ -177,7 +230,7 @@ void Market::ResolveFoodMarket()
 	netFoodSalesPeriod = 0;
 	netFoodSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0)
+	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0 && FoodBuyers[0].buyPrice > FoodSellers[0].sellPrice)
 	{
 		FoodBuyers.erase(FoodBuyers.begin());	
 		FoodSellers.erase(FoodSellers.begin());
@@ -233,7 +286,7 @@ void Market::ResolveProductionMarket()
 	netProductionSalesPeriod = 0;
 	netProductionSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0)
+	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0 && ProductionBuyers[0].buyPrice > ProductionSellers[0].sellPrice)
 	{
 		while (ProductionBuyers[0].buyQuantity == 0) ProductionBuyers.erase(ProductionBuyers.begin());
 		while (ProductionSellers[0].sellQuantity == 0) ProductionSellers.erase(ProductionSellers.begin());
@@ -289,7 +342,7 @@ void Market::ResolveLuxuryMarket()
 	netLuxurySalesPeriod = 0;
 	netLuxurySales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0)
+	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0 && LuxuryBuyers[0].buyPrice > LuxurySellers[0].sellPrice)
 	{
 		while (LuxuryBuyers[0].buyQuantity == 0) LuxuryBuyers.erase(LuxuryBuyers.begin());
 		while (LuxurySellers[0].sellQuantity == 0) LuxurySellers.erase(LuxurySellers.begin());
@@ -353,9 +406,26 @@ Market::Market()
 	netFoodSales = 0.0;
 	netProductionSales = 0.0;
 	netLuxurySales = 0.0;
+	netFoodSalesPeriod = 0.0;
+	netProductionSalesPeriod = 0.0;
+	netLuxurySalesPeriod = 0.0;
+	foodSalesPeriod = 0.0;
+	productionSalesPeriod = 0.0;
+	luxurySalesPeriod = 0.0;
 	foodSales = 0.0;
 	productionSales = 0.0;
 	luxurySales = 0.0;
+	strcpy(saveFile, "Market.txt");
+	if (!outfile.is_open())
+	{
+		outfile.open(saveFile, ios::out, ios::trunc);
+	}
+	char* temp = new char[255];
+	strcpy(temp, "Avg. Food Price, # sales, 10 turn avg, Avg. Production Price, # sales, 10 turn avg, Avg. Luxury Price, # sales, 10 turn avg, Turn Number, ");
+	outfile.write(temp, strlen(temp));
+	outfile.write("\n", 1);
+	outfile.close();
+	delete temp;
 }
 
 

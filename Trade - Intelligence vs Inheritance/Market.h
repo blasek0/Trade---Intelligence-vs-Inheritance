@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 #include <vector>
 #include <stdlib.h>
 
@@ -21,6 +22,8 @@ public:
 	std::vector<double> FoodPricePeriod;
 	std::vector<double> ProductionPricePeriod;
 	std::vector<double> LuxuryPricePeriod;
+	std::fstream outfile;
+	char saveFile[100];
 
 	struct FoodBid
 	{
@@ -149,6 +152,7 @@ public:
 	double ShortAvgProductionPrice();
 	double AvgLuxuryPrice();
 	double ShortAvgLuxuryPrice();
+	void WriteMarketState();
 
 private:
 	void CreateFoodBid(int buyingAgent, double buyPrice, int max);

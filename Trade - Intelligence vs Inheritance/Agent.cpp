@@ -39,14 +39,17 @@ void Agent::Trade()
 
 void Agent::TradeFood()
 {
+
 }
 
 void Agent::TradeProduction()
 {
+
 }
 
 void Agent::TradeLuxury()
 {
+
 }
 
 void Agent::ProduceFood()

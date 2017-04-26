@@ -83,6 +83,7 @@ void Simulation::Run(int numTurns)
 			{
 				AgentList[i].WriteAgentState();
 			}
+			marketObject->WriteMarketState();
 		}
 		marketObject->SortMarkets();
 		marketObject->ResolveBooks();
