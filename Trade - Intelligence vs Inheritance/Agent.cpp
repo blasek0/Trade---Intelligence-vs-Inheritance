@@ -214,6 +214,30 @@ void Agent::WriteInitialState()
 	delete toWrite;
 }
 
+void Agent::FailedFoodBid(double price)
+{
+}
+
+void Agent::FailedProductionBid(double price)
+{
+}
+
+void Agent::FailedLuxuryBid(double price)
+{
+}
+
+void Agent::SuccessfulFoodBid(double price)
+{
+}
+
+void Agent::SuccessfulProductionBid(double price)
+{
+}
+
+void Agent::SuccessfulLuxuryBid(double price)
+{
+}
+
 Agent::Agent(int idNumber, int startingMoney, char* saveFile)
 {
 	numOfAgents = Simulation::GetSimulationObject()->numOfAgents;

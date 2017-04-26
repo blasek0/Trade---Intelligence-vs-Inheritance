@@ -85,6 +85,7 @@ void Simulation::Run(int numTurns)
 			}
 		}
 		marketObject->SortMarkets();
+		marketObject->ResolveBooks();
 	}
 }
 

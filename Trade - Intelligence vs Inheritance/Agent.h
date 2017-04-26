@@ -8,6 +8,9 @@ class Agent
 public: //public variables
 	int agentIDNumber;
 	int numOfAgents;
+	double foodConfidenceInterval;
+	double productionConfidenceInterval;
+	double luxuryConfidenceInterval;
 	double agentMoney;
 	int agentInitialMoney;
 	int agentIntelligence;
@@ -24,6 +27,12 @@ public: //public functions
 	double ShareOfMoney();
 	void WriteAgentState();
 	void WriteInitialState();
+	void FailedFoodBid(double price);
+	void FailedProductionBid(double price);
+	void FailedLuxuryBid(double price);
+	void SuccessfulFoodBid(double price);
+	void SuccessfulProductionBid(double price);
+	void SuccessfulLuxuryBid(double price);
 
 private: //private functions
 	void Trade();

@@ -143,11 +143,14 @@ void Market::CreateLuxuryAsk(int sellingAgent, double sellPrice, int min)
 
 void Market::ResolveFoodMarket()
 {
+	FoodPricePeriod.erase(FoodPricePeriod.begin());
+	netFoodSalesPeriod = 0;
+	netFoodSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0)
 	{
-		while (FoodBuyers[0].buyQuantity == 0) FoodBuyers.erase(FoodBuyers.begin());
-		while (FoodSellers[0].sellQuantity == 0) FoodSellers.erase(FoodSellers.begin());
+		FoodBuyers.erase(FoodBuyers.begin());	
+		FoodSellers.erase(FoodSellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = FoodBuyers[0].buyingAgent;
@@ -171,7 +174,9 @@ void Market::ResolveFoodMarket()
 				worldObject->AgentList[buyingAgent - 1].agentFood++;
 				worldObject->AgentList[sellingAgent - 1].agentFood--;
 				netFoodSales += price;
+				netFoodSalesPeriod += price;
 				foodSales++;
+				foodSalesPeriod++;
 			}
 			else
 			{
@@ -179,10 +184,24 @@ void Market::ResolveFoodMarket()
 			}
 		}
 	}
+	while (FoodBuyers.size() != 0)
+	{
+		worldObject->AgentList[(FoodBuyers[0].buyingAgent - 1)].FailedFoodBid(FoodBuyers[0].buyPrice);
+		FoodBuyers.erase(FoodBuyers.begin());
+	}
+	while (FoodSellers.size() != 0)
+	{
+		worldObject->AgentList[(FoodSellers[0].sellingAgent - 1)].FailedFoodBid(FoodSellers[0].sellPrice);
+		FoodSellers.erase(FoodSellers.begin());
+	}
+	FoodPricePeriod.push_back(netFoodSalesPeriod / foodSalesPeriod);
 }
 
 void Market::ResolveProductionMarket()
 {
+	ProductionPricePeriod.erase(ProductionPricePeriod.begin());
+	netProductionSalesPeriod = 0;
+	netProductionSales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0)
 	{
@@ -211,7 +230,9 @@ void Market::ResolveProductionMarket()
 				worldObject->AgentList[buyingAgent - 1].agentProduction++;
 				worldObject->AgentList[sellingAgent - 1].agentProduction--;
 				netProductionSales += price;
+				netProductionSalesPeriod += price;
 				productionSales++;
+				productionSalesPeriod++;
 			}
 			else
 			{
@@ -219,10 +240,24 @@ void Market::ResolveProductionMarket()
 			}
 		}
 	}
+	while (ProductionBuyers.size() != 0)
+	{
+		worldObject->AgentList[(ProductionBuyers[0].buyingAgent - 1)].FailedProductionBid(ProductionBuyers[0].buyPrice);
+		ProductionBuyers.erase(ProductionBuyers.begin());
+	}
+	while (ProductionSellers.size() != 0)
+	{
+		worldObject->AgentList[(ProductionSellers[0].sellingAgent - 1)].FailedProductionBid(ProductionSellers[0].sellPrice);
+		ProductionSellers.erase(ProductionSellers.begin());
+	}
+	ProductionPricePeriod.push_back(netProductionSalesPeriod / productionSalesPeriod);
 }
 
 void Market::ResolveLuxuryMarket()
 {
+	LuxuryPricePeriod.erase(LuxuryPricePeriod.begin());
+	netLuxurySalesPeriod = 0;
+	netLuxurySales = 0;
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0)
 	{
@@ -251,7 +286,9 @@ void Market::ResolveLuxuryMarket()
 				worldObject->AgentList[buyingAgent - 1].agentLuxury++;
 				worldObject->AgentList[sellingAgent - 1].agentLuxury--;
 				netLuxurySales += price;
+				netLuxurySalesPeriod += price;
 				luxurySales++;
+				luxurySalesPeriod++;
 			}
 			else
 			{
@@ -259,6 +296,17 @@ void Market::ResolveLuxuryMarket()
 			}
 		}
 	}
+	while (LuxuryBuyers.size() != 0)
+	{
+		worldObject->AgentList[(LuxuryBuyers[0].buyingAgent - 1)].FailedLuxuryBid(LuxuryBuyers[0].buyPrice);
+		LuxuryBuyers.erase(LuxuryBuyers.begin());
+	}
+	while (LuxurySellers.size() != 0)
+	{
+		worldObject->AgentList[(LuxurySellers[0].sellingAgent - 1)].FailedLuxuryBid(LuxurySellers[0].sellPrice);
+		LuxurySellers.erase(LuxurySellers.begin());
+	}
+	LuxuryPricePeriod.push_back(netLuxurySalesPeriod / luxurySalesPeriod);
 }
 
 Market::Market()
@@ -269,6 +317,9 @@ Market::Market()
 	ProductionSellers.resize(0);
 	LuxuryBuyers.resize(0);
 	LuxurySellers.resize(0);
+	FoodPricePeriod.resize(0);
+	ProductionPricePeriod.resize(0);
+	LuxuryPricePeriod.resize(0);
 	netFoodSales = 0.0;
 	netProductionSales = 0.0;
 	netLuxurySales = 0.0;

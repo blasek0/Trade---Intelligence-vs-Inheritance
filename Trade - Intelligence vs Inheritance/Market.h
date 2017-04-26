@@ -9,9 +9,18 @@ public:
 	double netFoodSales;
 	double netProductionSales;
 	double netLuxurySales;
+	double netFoodSalesPeriod;
+	double netProductionSalesPeriod;
+	double netLuxurySalesPeriod;
+	double foodSalesPeriod;
+	double productionSalesPeriod;
+	double luxurySalesPeriod;
 	double foodSales;
 	double productionSales;
 	double luxurySales;
+	std::vector<double> FoodPricePeriod;
+	std::vector<double> ProductionPricePeriod;
+	std::vector<double> LuxuryPricePeriod;
 
 	struct FoodBid
 	{
