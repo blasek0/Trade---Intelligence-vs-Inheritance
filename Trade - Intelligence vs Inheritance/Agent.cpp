@@ -214,7 +214,7 @@ void Agent::WriteInitialState()
 	delete toWrite;
 }
 
-Agent::Agent(int idNumber, int intelligence, int startingMoney, char* saveFile)
+Agent::Agent(int idNumber, int startingMoney, char* saveFile)
 {
 	numOfAgents = Simulation::GetSimulationObject()->numOfAgents;
 	agentIDNumber = idNumber;
@@ -228,21 +228,13 @@ Agent::Agent(int idNumber, int intelligence, int startingMoney, char* saveFile)
 	Simulation::GetSimulationObject()->worldMoney += agentMoney;
 	agentInitialMoney = startingMoney;
 	agentIntelligence = Simulation::GetSimulationObject()->CreateRandomNumber(1, 5);
+	agentNegotiatingSkill = Simulation::GetSimulationObject()->CreateRandomNumber(1, 5);
 	strcpy(agentFile, saveFile);
 	char* temp = new char[20];
 	itoa(agentIDNumber, temp, 10);
 	strcat(agentFile, temp);
 	strcat(agentFile, ".txt");
 	delete temp;
-	utilities.resize(5);
-	for (int i = 0; i < 5; i++)
-	{
-		utilities[i].resize(3);
-		for (int j = 0; j < 3; j++)
-		{
-			utilities[i][j] = 0;
-		}
-	}
 	WriteInitialState();
 }
 
@@ -256,16 +248,8 @@ Agent::Agent(const Agent & tempAgent)
 	agentInitialMoney = tempAgent.agentInitialMoney;
 	agentMoney = tempAgent.agentMoney;
 	agentIntelligence = tempAgent.agentIntelligence;
+	agentNegotiatingSkill = tempAgent.agentNegotiatingSkill;
 	strcpy(agentFile, tempAgent.agentFile);
-	utilities.resize(5);
-	for (int i = 0; i < 5; i++)
-	{
-		utilities[i].resize(3);
-		for (int j = 0; j < 3; j++)
-		{
-			utilities[i][j] = 0;
-		}
-	}
 }
 
 Agent::~Agent()

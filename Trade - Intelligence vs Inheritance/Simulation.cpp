@@ -41,21 +41,20 @@ double Simulation::GetPrice(double buyPrice, double sellPrice, int buyingAgent, 
 void Simulation::Initialize(int numAgents)
 {
 	numOfAgents = numAgents;
-	int tempVar, tempVarTwo;
+	int tempVar;
 	char* temp = new char[65];
 	strcpy(temp, filename);
 	for (int i = 0; i < numOfAgents; i++)
 	{
-		tempVar = CreateRandomNumber(1, 5);
-		tempVarTwo = CreateRandomNumber(1, 100);
-		if (tempVarTwo % 50 == 0)
+		tempVar = CreateRandomNumber(1, 100);
+		if (tempVar % 50 == 0)
 		{
-			Agent *thisAgent = new Agent(i + 1, tempVar, CreateRandomNumber(1000, 10000), temp);
+			Agent *thisAgent = new Agent(i + 1, CreateRandomNumber(1000, 10000), temp);
 			AgentList.push_back(*thisAgent);
 		}
 		else
 		{
-			Agent *thisAgent = new Agent(i + 1, tempVar, CreateRandomNumber(10, 50), temp);
+			Agent *thisAgent = new Agent(i + 1, CreateRandomNumber(10, 50), temp);
 			AgentList.push_back(*thisAgent);
 		}
 	}

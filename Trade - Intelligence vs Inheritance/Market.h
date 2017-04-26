@@ -7,7 +7,7 @@ class Market
 	//public variables
 public:
 	double netFoodSales;
-	double netProudctionSales;
+	double netProductionSales;
 	double netLuxurySales;
 	double foodSales;
 	double productionSales;
@@ -134,6 +134,9 @@ public:
 	void ResolveBooks();
 	void CreateBid(int buyingAgent, int commodityType, double buyPrice, int max);
 	void CreateAsk(int sellingAgent, int commodityType, double sellPrice, int min);
+	double AvgFoodPrice();
+	double AvgProductionPrice();
+	double AvgLuxuryPrice();
 
 private:
 	void CreateFoodBid(int buyingAgent, double buyPrice, int max);
@@ -151,4 +154,3 @@ public:
 	Market();
 	~Market();
 };
-

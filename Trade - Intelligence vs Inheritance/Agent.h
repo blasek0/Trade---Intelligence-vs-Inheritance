@@ -11,13 +11,13 @@ public: //public variables
 	double agentMoney;
 	int agentInitialMoney;
 	int agentIntelligence;
+	int agentNegotiatingSkill;
 	int turnOption;
 	int agentFood;
 	int agentProduction;
 	int agentLuxury;
 	char agentFile[20];
 	std::fstream outfile;
-	std::vector<std::vector<int>> utilities;
 
 public: //public functions
 	void Execute();
@@ -34,8 +34,7 @@ private: //private functions
 	void EvaluateOptions();
 
 public: //Constructors and destructors
-	Agent(int idNumber, int intelligence, int startingMoney, char* saveFile);
+	Agent(int idNumber, int startingMoney, char* saveFile);
 	Agent(const Agent &tempAgent);
 	~Agent();
 };
-

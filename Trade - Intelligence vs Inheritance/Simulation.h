@@ -41,4 +41,3 @@ private: //Constructor
 public: //Destructor
 	~Simulation();
 };
-

@@ -72,6 +72,21 @@ void Market::CreateAsk(int sellingAgent, int commodityType, double sellPrice, in
 	}
 }
 
+double Market::AvgFoodPrice()
+{
+	return netFoodSales / foodSales;
+}
+
+double Market::AvgProductionPrice()
+{
+	return netProductionSales / productionSales;
+}
+
+double Market::AvgLuxuryPrice()
+{
+	return netLuxurySales / luxurySales;
+}
+
 void Market::CreateFoodBid(int buyingAgent, double buyPrice, int max)
 {
 	FoodBid *bid = new FoodBid();
@@ -131,6 +146,8 @@ void Market::ResolveFoodMarket()
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (FoodBuyers.size() != 0 && FoodSellers.size() != 0)
 	{
+		while (FoodBuyers[0].buyQuantity == 0) FoodBuyers.erase(FoodBuyers.begin());
+		while (FoodSellers[0].sellQuantity == 0) FoodSellers.erase(FoodSellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = FoodBuyers[0].buyingAgent;
@@ -153,14 +170,14 @@ void Market::ResolveFoodMarket()
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
 				worldObject->AgentList[buyingAgent - 1].agentFood++;
 				worldObject->AgentList[sellingAgent - 1].agentFood--;
+				netFoodSales += price;
+				foodSales++;
 			}
 			else
 			{
 				break;
 			}
 		}
-		FoodSellers.erase(FoodSellers.begin());
-		FoodBuyers.erase(FoodBuyers.begin());
 	}
 }
 
@@ -169,6 +186,8 @@ void Market::ResolveProductionMarket()
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (ProductionBuyers.size() != 0 && ProductionSellers.size() != 0)
 	{
+		while (ProductionBuyers[0].buyQuantity == 0) ProductionBuyers.erase(ProductionBuyers.begin());
+		while (ProductionSellers[0].sellQuantity == 0) ProductionSellers.erase(ProductionSellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = ProductionBuyers[0].buyingAgent;
@@ -191,14 +210,14 @@ void Market::ResolveProductionMarket()
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
 				worldObject->AgentList[buyingAgent - 1].agentProduction++;
 				worldObject->AgentList[sellingAgent - 1].agentProduction--;
+				netProductionSales += price;
+				productionSales++;
 			}
 			else
 			{
 				break;
 			}
 		}
-		ProductionSellers.erase(ProductionSellers.begin());
-		ProductionBuyers.erase(ProductionBuyers.begin());
 	}
 }
 
@@ -207,6 +226,8 @@ void Market::ResolveLuxuryMarket()
 	Simulation *worldObject = Simulation::GetSimulationObject();
 	while (LuxuryBuyers.size() != 0 && LuxurySellers.size() != 0)
 	{
+		while (LuxuryBuyers[0].buyQuantity == 0) LuxuryBuyers.erase(LuxuryBuyers.begin());
+		while (LuxurySellers[0].sellQuantity == 0) LuxurySellers.erase(LuxurySellers.begin());
 		int temp;
 		double price;
 		int buyingAgent = LuxuryBuyers[0].buyingAgent;
@@ -229,14 +250,14 @@ void Market::ResolveLuxuryMarket()
 				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
 				worldObject->AgentList[buyingAgent - 1].agentLuxury++;
 				worldObject->AgentList[sellingAgent - 1].agentLuxury--;
+				netLuxurySales += price;
+				luxurySales++;
 			}
 			else
 			{
 				break;
 			}
 		}
-		LuxurySellers.erase(LuxurySellers.begin());
-		LuxuryBuyers.erase(LuxuryBuyers.begin());
 	}
 }
 
@@ -249,7 +270,7 @@ Market::Market()
 	LuxuryBuyers.resize(0);
 	LuxurySellers.resize(0);
 	netFoodSales = 0.0;
-	netProudctionSales = 0.0;
+	netProductionSales = 0.0;
 	netLuxurySales = 0.0;
 	foodSales = 0.0;
 	productionSales = 0.0;
