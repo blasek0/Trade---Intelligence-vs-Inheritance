@@ -26,7 +26,7 @@ public: //public functions
 	void WriteInitialState();
 
 private: //private functions
-	void InitialTrade();
+	void Trade();
 	void ProduceFood();
 	void ProduceProduction();
 	void ProduceLuxury();

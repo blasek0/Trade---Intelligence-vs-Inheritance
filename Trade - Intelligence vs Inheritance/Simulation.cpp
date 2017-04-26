@@ -32,6 +32,12 @@ Simulation * Simulation::GetSimulationObject()
 	return simulationObject;
 }
 
+double Simulation::GetPrice(double buyPrice, double sellPrice, int buyingAgent, int sellingAgent)
+{
+	//EXPAND UPON LATER
+	return (buyPrice + sellPrice) / 2.0;
+}
+
 void Simulation::Initialize(int numAgents)
 {
 	numOfAgents = numAgents;

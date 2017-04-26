@@ -6,6 +6,12 @@ class Market
 {
 	//public variables
 public:
+	double netFoodSales;
+	double netProudctionSales;
+	double netLuxurySales;
+	double foodSales;
+	double productionSales;
+	double luxurySales;
 
 	struct FoodBid
 	{
@@ -115,16 +121,17 @@ public:
 			return a.sellPrice > b.sellPrice;
 		}
 	};
-	std::vector<FoodBid> FoodSellers;
-	std::vector<FoodAsk> FoodBuyers;
-	std::vector<ProductionBid> ProductionSellers;
-	std::vector<ProductionAsk> ProductionBuyers;
-	std::vector<LuxuryBid> LuxurySellers;
-	std::vector<LuxuryAsk> LuxuryBuyers;
+	std::vector<FoodAsk> FoodSellers;
+	std::vector<FoodBid> FoodBuyers;
+	std::vector<ProductionAsk> ProductionSellers;
+	std::vector<ProductionBid> ProductionBuyers;
+	std::vector<LuxuryAsk> LuxurySellers;
+	std::vector<LuxuryBid> LuxuryBuyers;
 
 	//public functions
 public:
 	void SortMarkets();
+	void ResolveBooks();
 	void CreateBid(int buyingAgent, int commodityType, double buyPrice, int max);
 	void CreateAsk(int sellingAgent, int commodityType, double sellPrice, int min);
 
@@ -135,6 +142,9 @@ private:
 	void CreateFoodAsk(int sellingAgent, double sellPrice, int min);
 	void CreateProductionAsk(int sellingAgent, double sellPrice, int min);
 	void CreateLuxuryAsk(int sellingAgent, double sellPrice, int min);
+	void ResolveFoodMarket();
+	void ResolveProductionMarket();
+	void ResolveLuxuryMarket();
 
 	//constructors & destructors
 public:

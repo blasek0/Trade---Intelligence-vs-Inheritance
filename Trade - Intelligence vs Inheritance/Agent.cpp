@@ -31,7 +31,7 @@ void Agent::Execute()
 	}//Eats 1 food per turn
 }
 
-void Agent::InitialTrade()
+void Agent::Trade()
 {
 }
 
