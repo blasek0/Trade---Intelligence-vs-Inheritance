@@ -2,6 +2,8 @@
 #include "Agent.h"
 #include "Market.h"
 #include <vector>
+#include <stdlib.h>
+#include <fstream>
 
 class Simulation
 {
@@ -15,12 +17,12 @@ public:
 	int numOfAgents;
 	int turnNumber;
 	char saveFile[100];
+	char worldFile[100];
 	int maxTurns;
 	std::fstream outfile;
 	std::vector<Agent> AgentList;
 	static Simulation* simulationObject;
 	Market* marketObject;
-
 
 public: //Public Functions
 	static Simulation* GetSimulationObject();
@@ -33,6 +35,7 @@ public: //Public Functions
 	int ProductionUtility(int production);
 	int LuxuryUtility(int luxury);
 	int MoneyUtility(int money);
+	void WriteWorldState();
 
 private: //Private Functions
 

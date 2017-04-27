@@ -61,7 +61,7 @@ void Simulation::Initialize(int numAgents, int turnsToAvg)
 	marketObject->turnsToAvg = turnsToAvg;
 	numOfAgents = numAgents;
 	int tempVar;
-	char* temp = new char[65];
+	char* temp = new char[255];
 	strcpy(temp, filename);
 	for (int i = 0; i < numOfAgents; i++)
 	{
@@ -77,6 +77,11 @@ void Simulation::Initialize(int numAgents, int turnsToAvg)
 			AgentList.push_back(*thisAgent);
 		}
 	}
+	strcpy(worldFile, "WorldSummary.txt");
+	strcpy(temp, "Food, Production, Luxury, Money, Turn Number, \n");
+	outfile.open(worldFile, ios::out, ios::trunc);
+	outfile.write(temp, strlen(temp));
+	outfile.close();
 	delete temp;
 }
 
@@ -98,6 +103,7 @@ void Simulation::Run(int numTurns)
 				AgentList[i].WriteAgentState();
 			}
 			marketObject->WriteMarketState();
+			WriteWorldState();
 		}
 		marketObject->SortMarkets();
 		marketObject->ResolveBooks();
@@ -148,6 +154,36 @@ int Simulation::LuxuryUtility(int luxury)
 int Simulation::MoneyUtility(int money)
 {
 	return 1 * money;
+}
+
+void Simulation::WriteWorldState()
+{
+	char* temp = new char[255];
+	if (!outfile.is_open())
+	{
+		outfile.open(worldFile, ios::app);
+	}
+	strcpy(temp, "");
+	itoa(worldFood, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(worldProduction, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(worldLuxury, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(worldMoney, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(turnNumber, temp, 10);
+	strcat(temp, ", \n");
+	outfile.write(temp, strlen(temp));
+	delete temp;
 }
 
 Simulation::Simulation()

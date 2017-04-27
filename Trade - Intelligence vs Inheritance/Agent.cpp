@@ -216,8 +216,8 @@ void Agent::EvaluateOptions()
 	}
 	if (moneyUtility > maxUtility)
 	{
-		turnOption = 4;
-		maxUtility = moneyUtility;
+		//turnOption = 4;
+		//maxUtility = moneyUtility;
 	}
 
 	switch (turnOption)

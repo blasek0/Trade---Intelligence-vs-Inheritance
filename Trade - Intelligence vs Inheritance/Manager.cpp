@@ -11,7 +11,6 @@ using namespace std;
 void Manager::Run()
 {
 	worldObject->Initialize(numagents, pricehistorylength);
-
 	worldObject->Run(maxturns);
 }
 
