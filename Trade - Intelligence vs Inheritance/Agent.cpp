@@ -60,7 +60,7 @@ void Agent::TradeFood()
 		tempPointer->marketObject->CreateAsk(agentIDNumber, 1, price, (agentFood - 3));
 		return;
 	}
-	else
+	else if ((int)round((avgFood - (double)agentFood) > 0))
 	{
 		tempPointer->marketObject->CreateBid(agentIDNumber, 1, price, (int)round((avgFood - (double)agentFood)));
 		return;

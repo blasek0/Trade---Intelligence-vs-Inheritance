@@ -35,14 +35,6 @@ public:
 		{
 			return buyPrice < a.buyPrice;
 		}
-		bool operator>(const FoodBid &a) const
-		{
-			return buyPrice > a.buyPrice;
-		}
-		bool price_sort_descending(const FoodBid &a, const FoodBid &b)
-		{
-			return a.buyPrice > b.buyPrice;
-		}
 	};
 	struct FoodAsk
 	{
@@ -52,14 +44,6 @@ public:
 		bool operator<(const FoodAsk &a) const
 		{
 			return sellPrice < a.sellPrice;
-		}
-		bool operator>(const FoodAsk &a) const
-		{
-			return sellPrice > a.sellPrice;
-		}
-		bool price_sort_descending(const FoodAsk &a, const FoodAsk &b)
-		{
-			return a.sellPrice > b.sellPrice;
 		}
 	};
 	struct ProductionBid
@@ -71,14 +55,6 @@ public:
 		{
 			return buyPrice < a.buyPrice;
 		}
-		bool operator>(const ProductionBid &a) const
-		{
-			return buyPrice > a.buyPrice;
-		}
-		bool price_sort_descending(const ProductionBid &a, const ProductionBid &b)
-		{
-			return a.buyPrice > b.buyPrice;
-		}
 	};
 	struct ProductionAsk
 	{
@@ -88,14 +64,6 @@ public:
 		bool operator<(const ProductionAsk &a) const
 		{
 			return sellPrice < a.sellPrice;
-		}
-		bool operator>(const ProductionAsk &a) const
-		{
-			return sellPrice > a.sellPrice;
-		}
-		bool price_sort_descending(const ProductionAsk &a, const ProductionAsk &b)
-		{
-			return a.sellPrice > b.sellPrice;
 		}
 	};
 	struct LuxuryBid
@@ -107,14 +75,6 @@ public:
 		{
 			return buyPrice < a.buyPrice;
 		}
-		bool operator>(const LuxuryBid &a) const
-		{
-			return buyPrice > a.buyPrice;
-		}
-		bool price_sort_descending(const LuxuryBid &a, const LuxuryBid &b)
-		{
-			return a.buyPrice > b.buyPrice;
-		}
 	};
 	struct LuxuryAsk
 	{
@@ -124,14 +84,6 @@ public:
 		bool operator<(const LuxuryAsk &a) const
 		{
 			return sellPrice < a.sellPrice;
-		}
-		bool operator>(const LuxuryAsk &a) const
-		{
-			return sellPrice > a.sellPrice;
-		}
-		bool price_sort_descending(const LuxuryAsk &a, const LuxuryAsk &b)
-		{
-			return a.sellPrice > b.sellPrice;
 		}
 	};
 	std::vector<FoodAsk> FoodSellers;

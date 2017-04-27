@@ -299,19 +299,18 @@ void Market::ResolveFoodMarket()
 	netFoodSalesPeriod = 0;
 	foodSalesPeriod;
 	Simulation *worldObject = Simulation::GetSimulationObject();
-	cout << FoodBuyers.size() << "Food buyers. " << FoodSellers.size() << "Food sellers.\n";
 	int temp;
 	double price;
 	int buyingAgent;
 	int sellingAgent;
-	cout << "!!!!!!!!!!!!!!!!!!!!\n";
-	while (!FoodBuyers.empty() && !FoodSellers.empty() && FoodBuyers[0].buyPrice >= FoodSellers[0].sellPrice)
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+	while (!FoodBuyers.empty() && !FoodSellers.empty() && FoodBuyers.front().buyPrice >= FoodSellers.front().sellPrice)
 	{
-		while (!FoodBuyers.empty() && FoodBuyers[0].buyQuantity == 0)
+		while (!FoodBuyers.empty() && FoodBuyers.front().buyQuantity == 0)
 		{
 			FoodBuyers.erase(FoodBuyers.begin());
 		}
-		while (!FoodSellers.empty() && FoodSellers[0].sellQuantity == 0)
+		while (!FoodSellers.empty() && FoodSellers.front().sellQuantity == 0)
 		{
 			FoodSellers.erase(FoodSellers.begin());
 		}
@@ -319,37 +318,52 @@ void Market::ResolveFoodMarket()
 		{
 			break;
 		}
-		buyingAgent = FoodBuyers[0].buyingAgent;
-		sellingAgent = FoodSellers[0].sellingAgent;
-		price = worldObject->GetPrice(FoodBuyers[0].buyPrice, FoodSellers[0].sellPrice,
+		buyingAgent = FoodBuyers.front().buyingAgent;
+		sellingAgent = FoodSellers.front().sellingAgent;
+		price = worldObject->GetPrice(FoodBuyers.front().buyPrice, FoodSellers.front().sellPrice,
 			buyingAgent, sellingAgent);
-		if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentFood > 0 
-			&& FoodBuyers[0].buyPrice > FoodSellers[0].sellPrice)
+		if (FoodBuyers.front().buyQuantity > FoodSellers.front().sellQuantity)
 		{
-			worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
-			worldObject->AgentList[sellingAgent - 1].agentMoney += price;
-			worldObject->AgentList[buyingAgent - 1].agentFood++;
-			worldObject->AgentList[sellingAgent - 1].agentFood--;
-			netFoodSales += price;
-			netFoodSalesPeriod += price;
-			foodSales++;
-			foodSalesPeriod++;
-			FoodBuyers[0].buyQuantity--;
-			FoodSellers[0].sellQuantity--;
-			cout << "Sale processed\n";
-			worldObject->AgentList[buyingAgent - 1].SuccessfulFoodBid(price);
-			worldObject->AgentList[sellingAgent - 1].SuccessfulFoodBid(price);
+			temp = FoodSellers.front().sellQuantity;
+		}
+		else
+		{
+			temp = FoodBuyers.front().buyQuantity;
+		}
+		for (int i = 0; i < temp; i++)
+		{
+			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentFood > 0
+				&& FoodBuyers.front().buyPrice > FoodSellers.front().sellPrice && FoodBuyers.front().buyQuantity > 0 && FoodSellers.front().sellQuantity > 0)
+			{
+				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
+				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
+				worldObject->AgentList[buyingAgent - 1].agentFood++;
+				worldObject->AgentList[sellingAgent - 1].agentFood--;
+				netFoodSales += price;
+				netFoodSalesPeriod += price;
+				foodSales++;
+				foodSalesPeriod++;
+				FoodBuyers.front().buyQuantity--;
+				FoodSellers.front().sellQuantity--;
+				cout << "Sale processed\n";
+				worldObject->AgentList[buyingAgent - 1].SuccessfulFoodBid(price);
+				worldObject->AgentList[sellingAgent - 1].SuccessfulFoodBid(price);
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
-	cout << "@@@@@@@@@@@@@@\n";
-	while (FoodBuyers.size() != 0)
+	cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	while (!FoodBuyers.empty())
 	{
-		worldObject->AgentList[(FoodBuyers[0].buyingAgent - 1)].FailedFoodBid(FoodBuyers[0].buyPrice);
+		worldObject->AgentList[(FoodBuyers.front().buyingAgent - 1)].FailedFoodBid(FoodBuyers.front().buyPrice);
 		FoodBuyers.erase(FoodBuyers.begin());
 	}
-	while (FoodSellers.size() != 0)
+	while (!FoodSellers.empty())
 	{
-		worldObject->AgentList[(FoodSellers[0].sellingAgent - 1)].FailedFoodBid(FoodSellers[0].sellPrice);
+		worldObject->AgentList[(FoodSellers.front().sellingAgent - 1)].FailedFoodBid(FoodSellers.front().sellPrice);
 		FoodSellers.erase(FoodSellers.begin());
 	}
 	FoodPricePeriod.push_back(netFoodSalesPeriod / foodSalesPeriod);
