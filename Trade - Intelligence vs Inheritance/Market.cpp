@@ -295,7 +295,13 @@ void Market::CreateLuxuryAsk(int sellingAgent, double sellPrice, int min)
 
 void Market::ResolveFoodMarket()
 {
-	if (FoodPricePeriod.size() > turnsToAvg) FoodPricePeriod.erase(FoodPricePeriod.begin());
+	if (FoodPricePeriod.size() > turnsToAvg)
+	{
+		cout << "Erasing first foodPrice\n";
+		FoodPricePeriod.erase(FoodPricePeriod.begin());
+	}
+	int buyingIndex = 0;
+	int sellingIndex = 0;
 	netFoodSalesPeriod = 0;
 	foodSalesPeriod;
 	Simulation *worldObject = Simulation::GetSimulationObject();
@@ -304,20 +310,8 @@ void Market::ResolveFoodMarket()
 	int buyingAgent;
 	int sellingAgent;
 	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-	while (!FoodBuyers.empty() && !FoodSellers.empty() && FoodBuyers.front().buyPrice >= FoodSellers.front().sellPrice)
+	while (!FoodBuyers.empty() && !FoodSellers.empty())
 	{
-		while (!FoodBuyers.empty() && FoodBuyers.front().buyQuantity == 0)
-		{
-			FoodBuyers.erase(FoodBuyers.begin());
-		}
-		while (!FoodSellers.empty() && FoodSellers.front().sellQuantity == 0)
-		{
-			FoodSellers.erase(FoodSellers.begin());
-		}
-		if (FoodBuyers.empty() || FoodSellers.empty())
-		{
-			break;
-		}
 		buyingAgent = FoodBuyers.front().buyingAgent;
 		sellingAgent = FoodSellers.front().sellingAgent;
 		price = worldObject->GetPrice(FoodBuyers.front().buyPrice, FoodSellers.front().sellPrice,
@@ -330,29 +324,50 @@ void Market::ResolveFoodMarket()
 		{
 			temp = FoodBuyers.front().buyQuantity;
 		}
-		for (int i = 0; i < temp; i++)
+		if (worldObject->AgentList[buyingAgent - 1].agentMoney > price 
+			&& worldObject->AgentList[sellingAgent - 1].agentFood > 0
+				&& FoodBuyers.front().buyPrice >= FoodSellers.front().sellPrice
+					&& FoodBuyers.front().buyQuantity > 0 
+						&& FoodSellers.front().sellQuantity > 0)
 		{
-			if (worldObject->AgentList[buyingAgent - 1].agentMoney > price && worldObject->AgentList[sellingAgent - 1].agentFood > 0
-				&& FoodBuyers.front().buyPrice > FoodSellers.front().sellPrice && FoodBuyers.front().buyQuantity > 0 && FoodSellers.front().sellQuantity > 0)
+			worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
+			worldObject->AgentList[sellingAgent - 1].agentMoney += price;
+			worldObject->AgentList[buyingAgent - 1].agentFood++;
+			worldObject->AgentList[sellingAgent - 1].agentFood--;
+			netFoodSales += price;
+			netFoodSalesPeriod += price;
+			foodSales++;
+			foodSalesPeriod++;
+			FoodBuyers.front().buyQuantity--;
+			FoodSellers.front().sellQuantity--;
+			cout << "Sale processed\n";
+			worldObject->AgentList[buyingAgent - 1].SuccessfulFoodBid(price);
+			worldObject->AgentList[sellingAgent - 1].SuccessfulFoodBid(price);
+		}
+		if (!FoodSellers.empty() && !FoodBuyers.empty())
+		{
+			if (FoodSellers.front().sellPrice > FoodBuyers.front().buyPrice)
 			{
-				worldObject->AgentList[buyingAgent - 1].agentMoney -= price;
-				worldObject->AgentList[sellingAgent - 1].agentMoney += price;
-				worldObject->AgentList[buyingAgent - 1].agentFood++;
-				worldObject->AgentList[sellingAgent - 1].agentFood--;
-				netFoodSales += price;
-				netFoodSalesPeriod += price;
-				foodSales++;
-				foodSalesPeriod++;
-				FoodBuyers.front().buyQuantity--;
-				FoodSellers.front().sellQuantity--;
-				cout << "Sale processed\n";
-				worldObject->AgentList[buyingAgent - 1].SuccessfulFoodBid(price);
-				worldObject->AgentList[sellingAgent - 1].SuccessfulFoodBid(price);
-			}
-			else
-			{
+				cout << "Sell price > buy price, break\n";
 				break;
 			}
+		}
+		while (!FoodBuyers.empty() && FoodBuyers.front().buyQuantity == 0)
+		{
+			cout << "BuyQuantity = 0\n";
+			buyingIndex++;
+			FoodBuyers.erase(FoodBuyers.begin());
+		}
+		while (!FoodSellers.empty() && FoodSellers.front().sellQuantity == 0)
+		{
+			cout << "SellQuantity = 0\n";
+			sellingIndex++;
+			FoodSellers.erase(FoodSellers.begin());
+		}
+		if (FoodBuyers.empty() || FoodSellers.empty())
+		{
+			cout << "Buy or Sell list is empty, break\n";
+			break;
 		}
 	}
 	cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
