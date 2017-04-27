@@ -256,6 +256,10 @@ void Agent::WriteAgentState()
 		cout << "failed to open file\n";
 		system("pause");
 	}
+	int utility = Simulation::GetSimulationObject()->FoodUtility(agentFood)
+		+ Simulation::GetSimulationObject()->ProductionUtility(agentProduction)
+		+ Simulation::GetSimulationObject()->LuxuryUtility(agentLuxury)
+		+ Simulation::GetSimulationObject()->MoneyUtility(agentMoney);
 	char* temp = new char[65];
 	itoa(agentFood, temp, 10);
 	strcat(temp, ", ");
@@ -270,6 +274,10 @@ void Agent::WriteAgentState()
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
 	itoa(agentMoney, temp, 10);
+	strcat(temp, ", ");
+	outfile.write(temp, strlen(temp));
+	strcpy(temp, "");
+	itoa(utility, temp, 10);
 	strcat(temp, ", ");
 	outfile.write(temp, strlen(temp));
 	strcpy(temp, "");
@@ -312,7 +320,7 @@ void Agent::WriteInitialState()
 	strcat(temp, ", ");
 	strcat(toWrite, temp);
 	outfile.write(toWrite, strlen(toWrite));
-	strcpy(toWrite, "\nFood, Production, Luxury, Money, Turn Number, \n");
+	strcpy(toWrite, "\nFood, Production, Luxury, Money, Utility, Turn Number, \n");
 	outfile.write(toWrite, strlen(toWrite));
 	outfile.close();
 	delete temp;
