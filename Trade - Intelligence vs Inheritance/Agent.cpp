@@ -101,7 +101,10 @@ void Agent::TradeLuxury()
 	}
 	else
 	{
-		tempPointer->marketObject->CreateBid(agentIDNumber, 3, price, (int)avgLuxury - agentLuxury);
+		if (avgLuxury - agentLuxury > 0)
+		{
+			tempPointer->marketObject->CreateBid(agentIDNumber, 3, price, (int)avgLuxury - agentLuxury);
+		}
 		return;
 	}
 }

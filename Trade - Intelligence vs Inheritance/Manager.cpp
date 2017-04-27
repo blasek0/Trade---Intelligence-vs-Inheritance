@@ -2,8 +2,8 @@
 #include "Simulation.h"
 #include <Windows.h>
 
-#define numagents 10
-#define maxturns 50
+#define numagents 500
+#define maxturns 500
 #define pricehistorylength 10
 
 using namespace std;
