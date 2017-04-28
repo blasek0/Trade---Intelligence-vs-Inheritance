@@ -16,10 +16,8 @@ Simulation;
 
 using namespace std;
 
-//Primary turn function for agents
 void Agent::Execute()
 {
-	//cout << agentIDNumber << " Executing turn #: " << Simulation::GetSimulationObject()->turnNumber << "\n";
 	foodConfidenceInterval -= 0.2;
 	productionConfidenceInterval -= 0.2;
 	luxuryConfidenceInterval -= 0.2;
@@ -33,9 +31,9 @@ void Agent::Execute()
 	}
 	else
 	{
-		EvaluateOptions();									//Agents choose which option to perform
-		Trade();
+		EvaluateOptions();
 	}//Eats 1 food per turn
+	Trade();
 }
 
 void Agent::Trade()

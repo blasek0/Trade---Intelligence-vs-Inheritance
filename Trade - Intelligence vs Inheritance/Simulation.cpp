@@ -88,12 +88,10 @@ void Simulation::Initialize(int numAgents, int turnsToAvg)
 void Simulation::Run(int numTurns)
 {
 	maxTurns = numTurns;
-	//Execution code goes here
 	for (turnNumber = 1; turnNumber <= maxTurns; turnNumber++)
 	{
 		for (int z = 0; z < numOfAgents; z++)
 		{
-			//cout << AgentList[i].agentIDNumber;
 			AgentList[z].Execute();
 		}
 		if (turnNumber % turnstosave == 0)

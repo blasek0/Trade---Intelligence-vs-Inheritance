@@ -32,7 +32,7 @@ public:
 		double buyPrice;
 		int buyQuantity;
 		bool operator<(const FoodBid &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return buyPrice < a.buyPrice;
 		}
 	};
@@ -42,7 +42,7 @@ public:
 		double sellPrice;
 		int sellQuantity;
 		bool operator<(const FoodAsk &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return sellPrice < a.sellPrice;
 		}
 	};
@@ -52,7 +52,7 @@ public:
 		double buyPrice;
 		int buyQuantity;
 		bool operator<(const ProductionBid &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return buyPrice < a.buyPrice;
 		}
 	};
@@ -62,7 +62,7 @@ public:
 		double sellPrice;
 		int sellQuantity;
 		bool operator<(const ProductionAsk &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return sellPrice < a.sellPrice;
 		}
 	};
@@ -72,7 +72,7 @@ public:
 		double buyPrice;
 		int buyQuantity;
 		bool operator<(const LuxuryBid &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return buyPrice < a.buyPrice;
 		}
 	};
@@ -82,7 +82,7 @@ public:
 		double sellPrice;
 		int sellQuantity;
 		bool operator<(const LuxuryAsk &a) const
-		{
+		{ //Overloaded < operator allows std::sort() to work on this struct with no need for custom sorting function
 			return sellPrice < a.sellPrice;
 		}
 	};

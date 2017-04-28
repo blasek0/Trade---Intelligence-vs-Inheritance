@@ -4,7 +4,7 @@
 
 #define numagents 500
 #define maxturns 500
-#define pricehistorylength 1
+#define pricehistorylength 2
 
 using namespace std;
 
